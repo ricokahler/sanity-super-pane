@@ -12,7 +12,7 @@
 
 Super Pane aims to replace the traditional document type list pane in the Sanity Studio for certain documents that need more editing power. The goal of Super Pane is to enable more bulk editing and quick scanning while not losing any of the live-edit/reactivity of Sanity.
 
-Super Pane aims to feel Sanity-y via [`@sanity/ui`](https://www.sanity.io/ui) other integration.
+Super Pane aims to feel Sanity-y via [`@sanity/ui`](https://www.sanity.io/ui) other integrations.
 
 ## Installation
 
