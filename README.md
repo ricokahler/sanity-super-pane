@@ -1,3 +1,3 @@
 # Sanity Super Pane
 
-> watch for release
+> watch for releases
