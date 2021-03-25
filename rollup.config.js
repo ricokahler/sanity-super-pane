@@ -25,6 +25,11 @@ const config = {
       plugins: [
         '@babel/plugin-transform-runtime',
         '@babel/plugin-proposal-class-properties',
+        // for some reason, sanity's webpack config doesn't like spreads
+        [
+          '@babel/plugin-proposal-object-rest-spread',
+          { loose: true, useBuiltIns: true },
+        ],
       ],
       babelHelpers: 'runtime',
       extensions,
