@@ -4,7 +4,7 @@
 
 ![CleanShot 2021-03-25 at 09 00 11](https://user-images.githubusercontent.com/10551026/112476955-d2479380-8d48-11eb-842e-15f0674d29d4.gif)
 
-**Status:** ⚠️ EARLY ALPHA. There is [much more](https://github.com/ricokahler/sanity-super-pane/issues/2) planned for this thing. Stay tuned/Watch Releases to be notifed with updates.
+**Status:** ⚠️ MVP/EARLY ALPHA. There is [much more](https://github.com/ricokahler/sanity-super-pane/issues/2) planned for this thing. Stay tuned/Watch Releases to be notifed with updates.
 
 [Please report bugs](/issues)!
 
