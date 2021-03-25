@@ -1,0 +1,209 @@
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tableWrapper {
+  flex: 1 1 auto;
+  overflow: auto;
+  position: relative;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  transition: opacity 250ms;
+  background-color: white;
+  z-index: 1;
+  opacity: 0;
+  display: flex;
+}
+
+.loadingOverlayActive {
+  opacity: 0.5;
+}
+
+.loadingSpinner {
+  margin: auto;
+  width: 32px;
+  height: 32px;
+  animation: spin 1500ms linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.table td,
+.table th {
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.tbody tr td {
+  border-bottom: 1px solid #ced2d9;
+}
+
+.thead th {
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  text-align: left;
+  background-color: white;
+  z-index: 1;
+}
+
+.tbody td {
+  cursor: pointer;
+}
+
+.thead th::after {
+  position: absolute;
+  content: ' ';
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border-bottom: 2px solid #ced2d9;
+  pointer-events: none;
+}
+
+.tbody tr:hover td {
+  background-color: #f1f3f6;
+}
+
+.tbody tr:active td {
+  background-color: #e4e8ed;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-top: 2px solid #ced2d9;
+}
+
+.selectLabel {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.select {
+  width: 75px;
+}
+
+.table .optionsCell {
+  text-align: right;
+}
+
+.menu {
+  text-align: left;
+}
+
+.table .titleCell {
+  max-width: 232px;
+  padding-left: 0;
+}
+
+.checkboxCell {
+  width: 30px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hiddenCheckbox {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkboxFacade {
+  display: flex;
+  pointer-events: none;
+}
+
+.checkboxCell > * > * {
+  margin: auto;
+}
+
+.bulkInfo {
+  flex: 0 0 auto;
+  background-color: black;
+  color: white;
+  padding: 0 0.5rem;
+  top: 0;
+  height: 0;
+  overflow: hidden;
+  transition-duration: 250ms;
+  transition-property: height, opacity;
+  opacity: 0;
+  display: flex;
+}
+
+.bulkInfo > * {
+  margin: auto;
+}
+
+.bulkInfoRevealed {
+  height: 32px;
+  opacity: 1;
+}
+
+.bulkInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clearButton {
+  appearance: none;
+  outline: none;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.clearButton:hover,
+.clearButton:focus {
+  text-decoration: underline;
+}
+
+.clearButton:active {
+  color: #ddd;
+}
+
+.statusIcon {
+  width: 24px;
+  height: 24px;
+}

@@ -1,0 +1,33 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.label {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label:hover {
+  background-color: #f1f3f6;
+}
+
+.label:active {
+  background-color: #e4e8ed;
+}
+
+.checkbox {
+  margin-right: space(2);
+}
+
+.footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem;
+}

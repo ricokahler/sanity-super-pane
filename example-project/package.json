@@ -1,0 +1,45 @@
+{
+  "name": "exampleproject",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "package.json",
+  "author": "Rico Kahler <rico@bloomscape.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "sanity start",
+    "build": "sanity build"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/base": "^2.6.2",
+    "@sanity/components": "^2.2.6",
+    "@sanity/core": "^2.6.2",
+    "@sanity/default-layout": "^2.6.2",
+    "@sanity/default-login": "^2.2.6",
+    "@sanity/desk-tool": "^2.6.3",
+    "@sanity/google-maps-input": "^2.6.2",
+    "@sanity/vision": "^2.2.6",
+    "@types/classnames": "^2.2.11",
+    "@types/react-window": "^1.8.2",
+    "@typescript-eslint/eslint-plugin": "^4.0.0",
+    "@typescript-eslint/parser": "^4.19.0",
+    "babel-eslint": "^10.0.0",
+    "eslint": "^7.22.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "prop-types": "^15.7",
+    "react": "^17.0",
+    "react-dom": "^17.0",
+    "react-error-boundary": "^3.1.1",
+    "react-icons": "^3.11.0",
+    "react-window": "^1.8.6",
+    "typescript": "^4.2.3"
+  }
+}

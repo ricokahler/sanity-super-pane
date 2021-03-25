@@ -1,0 +1,14 @@
+node_modules
+scripts
+src
+.github
+.eslintrc
+.gitignore
+.prettierrc
+.releaserc.json
+external.d.ts
+.env
+package-lock.json
+renovate.json
+rollup.config.js
+tsconfig.json
