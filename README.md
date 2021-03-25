@@ -6,6 +6,8 @@
 
 **Status:** ⚠️ EARLY ALPHA. There is [much more](https://github.com/ricokahler/sanity-super-pane/issues/2) planned for this thing. Stay tuned/Watch Releases to be notifed with updates.
 
+[Please report bugs](/issues)!
+
 ## What
 
 Super Pane aims to replace the traditional document type list pane in the Sanity Studio for certain documents that need more editing power. The goal of Super Pane is to enable more bulk editing and quick scanning while not losing any of the live-edit/reactivity of Sanity.
