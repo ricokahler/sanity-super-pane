@@ -64,14 +64,14 @@ function createSuperPane(typeName: string, S: any) {
     }, [client.refresh]);
 
     const fields = schemaType.fields.filter((field: any) =>
-      selectedColumns.has(field.name),
+      selectedColumns.has(field.name)
     );
 
     const atLeastOneSelected = client.results.some((i) =>
-      selectedIds.has(i._normalizedId),
+      selectedIds.has(i._normalizedId)
     );
     const allSelected = client.results.every((i) =>
-      selectedIds.has(i._normalizedId),
+      selectedIds.has(i._normalizedId)
     );
 
     return (
@@ -98,6 +98,11 @@ function createSuperPane(typeName: string, S: any) {
                 className={styles.clearButton}
                 selectedIds={selectedIds}
                 typeName={typeName}
+                onDelete={() => {
+                  setSelectedIds(new Set());
+                  client.setPage(0);
+                  client.refresh();
+                }}
               />
             </div>
           </div>
@@ -172,7 +177,7 @@ function createSuperPane(typeName: string, S: any) {
                       router.resolveIntentLink('edit', {
                         id: item._id,
                         type: item._type,
-                      }),
+                      })
                     );
                   };
 
@@ -193,7 +198,7 @@ function createSuperPane(typeName: string, S: any) {
                       <td
                         className={classNames(
                           styles.checkboxCell,
-                          'prevent-nav',
+                          'prevent-nav'
                         )}
                       >
                         <input
