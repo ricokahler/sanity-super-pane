@@ -27,6 +27,7 @@ interface Props {
   className?: string;
   typeName: string;
   selectedIds: Set<string>;
+  onDelete: () => void;
 }
 
 const ErroredDocuments = ({ e, schemaType }: { e: any; schemaType: any }) => {
@@ -61,7 +62,12 @@ const ErroredDocuments = ({ e, schemaType }: { e: any; schemaType: any }) => {
 const removeDraftPrefix = (s: string) =>
   s.startsWith('drafts.') ? s.substring('drafts.'.length) : s;
 
-function BulkActionsMenu({ className, selectedIds, typeName }: Props) {
+function BulkActionsMenu({
+  className,
+  selectedIds,
+  typeName,
+  onDelete,
+}: Props) {
   const buttonId = useMemo(nanoid, []);
   const schemaType = useMemo(() => schema.get(typeName), [typeName]);
   const toast = useToast();
@@ -88,7 +94,7 @@ function BulkActionsMenu({ className, selectedIds, typeName }: Props) {
 
       const draftIdsThatAlsoHavePublishedIds = ids.filter(
         (id) =>
-          id.startsWith('drafts.') && idSet.has(id.substring('drafts.'.length)),
+          id.startsWith('drafts.') && idSet.has(id.substring('drafts.'.length))
       );
 
       const t = client.transaction();
@@ -225,6 +231,7 @@ function BulkActionsMenu({ className, selectedIds, typeName }: Props) {
       }
 
       await t.commit();
+      onDelete();
     } catch (e) {
       console.warn(e);
 
@@ -234,8 +241,7 @@ function BulkActionsMenu({ className, selectedIds, typeName }: Props) {
           <>
             <p>
               The bulk delete failed. This usually occurs because there are
-              other documents referencing the documents you’re trying to
-              delete.
+              other documents referencing the documents you’re trying to delete.
             </p>
 
             <ErroredDocuments e={e} schemaType={schemaType} />
