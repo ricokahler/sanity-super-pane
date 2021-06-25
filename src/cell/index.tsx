@@ -52,7 +52,9 @@ function Cell({ field, value }: Props) {
     default: {
       return (
         <td key={field.name}>
-          <SanityPreview type={field.type} layout="default" value={value} />
+          {value && (
+            <SanityPreview type={field.type} layout="default" value={value} />
+          )}
         </td>
       );
     }
