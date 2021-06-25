@@ -4,7 +4,7 @@ let client = sanityClient
 
 if (typeof sanityClient.withConfig === 'function') {
   client = sanityClient.withConfig({
-    apiVersion: "v1"
+    apiVersion: "1"
   })
 }
 
