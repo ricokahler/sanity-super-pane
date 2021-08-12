@@ -17,6 +17,7 @@
     "start": "sanity start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./scripts/build",
+    "build:studio": "sanity build public -y",
     "prepare": "npm run build",
     "lint": "eslint super-pane",
     "format": "prettier . --write"

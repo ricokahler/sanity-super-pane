@@ -5,6 +5,7 @@ scripts
 src
 static
 super-pane
+public
 temp-movie-project
 .eslintrc
 .gitignore
