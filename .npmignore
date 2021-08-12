@@ -7,14 +7,15 @@ static
 super-pane
 public
 temp-movie-project
+.DS_Store
 .eslintrc
 .gitignore
 .npmignore
 .npmrc
-.pretterrc
+.prettierrc
 .releaserc.json
 external.d.ts
-rennovate.json
+renovate.json
 rollup.config.js
 sanity.json
 structure.js
