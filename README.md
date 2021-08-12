@@ -68,7 +68,7 @@ npx sanity init -y \
   --output-path ./temp-movie-project
 ```
 
-After this is done grab the cat
+After this is done grab the project ID:
 
 ```
 cat ./temp-movie-project/sanity.json | grep projectId
