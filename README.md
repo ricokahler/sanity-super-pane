@@ -34,3 +34,56 @@ export default () =>
       S.listItem().title('Normal List').child(createSuperPane('movie', S)),
     ]);
 ```
+
+## Local development
+
+Here is the first time setup for this lib:
+
+### Install
+
+First, clone the repo (or a fork), and then install with npm
+
+> Note: installing with npm instead of yarn is required.
+
+```
+npm i
+```
+
+### Create a sample project with the movie dataset
+
+The login into the sanity CLI
+
+```
+npx sanity login
+```
+
+Then create a temporary project via the CLI. We'll use this create project entry in your Sanity account with the example movie dataset.
+
+```
+npx sanity init -y \
+  --create-project "super-pane-dev" \
+  --dataset production \
+  --visibility private \
+  --template moviedb \
+  --output-path ./temp-movie-project
+```
+
+After this is done grab the cat
+
+```
+cat ./temp-movie-project/sanity.json | grep projectId
+```
+
+Copy and paste the `projectId` into the root `sanity.json` and then delete the `temp-movie-project` folder.
+
+### Start the dev server
+
+```
+npm start
+```
+
+## Contributing
+
+1. Open an [issue](/issues) first so we can quickly align on the what and how.
+2. Fork this repo to your own Github account or org.
+3. Create a new branch (e.g. `feat/new-feature`, `fix/the-bug`, etc) and commit following the [Angular Commit Message Conventions](https://github.com/semantic-release/semantic-release#commit-message-format). This is important because this repo is managed via [semantic-release](https://github.com/semantic-release/semantic-release). Semantic-release parses these messages to determine version numbers.
