@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { debounceTime, tap } from 'rxjs/operators';
 import { nanoid } from 'nanoid';
 import client from './client';
+import FieldToSearchFor from './search-field/FieldToSearchFor';
 
 export interface Cursor {
   results: any[];
@@ -14,13 +15,15 @@ export interface Cursor {
 const removeDraftPrefix = (s: string) =>
   s.startsWith('drafts.') ? s.substring('drafts.'.length) : s;
 
+
 interface Params {
   typeName: string;
   pageSize: number;
   selectedColumns: Set<string>;
+  selectedFieldToSearchFor: FieldToSearchFor;
 }
 
-function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
+function usePaginatedClient({ typeName, pageSize, selectedColumns, selectedFieldToSearchFor }: Params) {
   // the loading statuses are a set of strings
   // when it's empty, nothing is loading
   const [loadingStatuses, setLoadingStatuses] = useState(new Set<string>());
@@ -46,6 +49,13 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
   const [refreshId, setRefreshId] = useState(nanoid());
   const refresh = useCallback(() => setRefreshId(nanoid()), []);
 
+  const [userQuery, setUserQuery] = useState('')
+  // Builds the string to use when a custom filter has been entered
+  const buildUserQuery = useCallback(() => {
+    return userQuery.length ? ` && ${selectedFieldToSearchFor.name} match "${userQuery}*"` : ''
+  }, [selectedFieldToSearchFor, userQuery])
+
+
   // get total count
   useEffect(() => {
     let canceled = false;
@@ -60,7 +70,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
 
       // fetch all the draft IDs in this document type
       const draftIds = await client.fetch<string[]>(
-        `*[_type == $typeName && _id in path("drafts.**")]._id`,
+        `*[_type == $typeName && _id in path("drafts.**") ${buildUserQuery()}]._id`,
         { typeName },
       );
 
@@ -71,8 +81,8 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
         notDraftCount: number;
       }>(
         `{
-          "draftsWithPublishedVersion": *[_type == $typeName && _id in $ids]._id,
-          "notDraftCount": count(*[_type == $typeName && !(_id in path("drafts.**"))]),
+          "draftsWithPublishedVersion": *[_type == $typeName && _id in $ids ${buildUserQuery()}]._id,
+          "notDraftCount": count(*[_type == $typeName && !(_id in path("drafts.**")) ${buildUserQuery()}]),
         }`,
         { ids: draftIds.map(removeDraftPrefix), typeName },
       );
@@ -102,7 +112,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
     return () => {
       canceled = true;
     };
-  }, [typeName, refreshId]);
+  }, [typeName, refreshId, buildUserQuery]);
 
   // get page IDs
   useEffect(() => {
@@ -113,10 +123,10 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
         next.add('page_ids');
         return next;
       });
-
+      
       // query for all the draft IDs
       const draftIds = await client.fetch<string[]>(
-        '*[_type == $typeName && _id in path("drafts.**")]._id',
+        `*[_type == $typeName && _id in path("drafts.**") ${buildUserQuery()}]._id`,
         { typeName },
       );
 
@@ -143,8 +153,9 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
           // where we have to remove half the result set in the case of
           // duplicate `draft.` document
           pageSize * 2;
+        
         const pageIds = await client.fetch<string[]>(
-          '*[_type == $typeName][$start...$end]._id',
+          `*[_type == $typeName ${buildUserQuery()}][$start...$end]._id`,
           { typeName, start, end },
         );
 
@@ -190,7 +201,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
         // TODO: proper error handling
         console.warn(e);
       });
-  }, [page, pageSize, typeName, refreshId]);
+  }, [page, pageSize, typeName, refreshId, buildUserQuery]);
 
   // get results
   useEffect(() => {
@@ -198,7 +209,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
     const ids = pageIds.map((id) => [id, `drafts.${id}`]).flat();
     // these IDs will go into a specific query. if the draft or published
     // version happens to not exist, that's okay.
-    const query = `*[_id in $ids] { _id, _type, ${Array.from(
+    const query = `*[_id in $ids ${buildUserQuery()}] { _id, _type, ${Array.from(
       selectedColumns,
     ).join(', ')} }`;
 
@@ -289,7 +300,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
       .subscribe(getResults);
 
     return () => subscription.unsubscribe();
-  }, [pageIds, selectedColumns, refreshId]);
+  }, [pageIds, selectedColumns, refreshId, buildUserQuery]);
 
   // reset page
   useEffect(() => {
@@ -309,6 +320,7 @@ function usePaginatedClient({ typeName, pageSize, selectedColumns }: Params) {
     pageIds,
     total,
     refresh,
+    setUserQuery
   };
 }
 
