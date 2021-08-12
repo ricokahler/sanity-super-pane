@@ -1,5 +1,5 @@
 import S from '@sanity/desk-tool/structure-builder';
-import { createSuperPane } from './dist/index.esm';
+import { createSuperPane } from './super-pane';
 
 export default () =>
   S.list()

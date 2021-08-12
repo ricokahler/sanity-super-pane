@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer';
 const extensions = ['.js', '.ts', '.tsx'];
 
 const config = {
-  input: './src/index.ts',
+  input: './super-pane/index.ts',
   output: {
     file: './dist/index.esm.js',
     format: 'es',

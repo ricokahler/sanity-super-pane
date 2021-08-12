@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "esModuleInterop": true,
     "strict": true,
     "jsx": "preserve",
+    "esModuleInterop": true,
+    "target": "esnext",
     "moduleResolution": "node",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist"
-  }
+    "outDir": "./dist"
+  },
+  "include": [
+    "./node_modules/@sanity/base/types/**/*.ts",
+    "./**/*.ts",
+    "./**/*.tsx"
+  ]
 }
