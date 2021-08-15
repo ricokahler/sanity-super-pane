@@ -1,0 +1,9 @@
+.searchForm {
+  margin: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.searchSelect {
+  width: 5rem;
+}
