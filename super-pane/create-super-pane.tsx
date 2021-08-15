@@ -28,6 +28,8 @@ import {
   ControlsIcon,
 } from '@sanity/icons';
 import styles from './styles.module.css';
+import SearchField from './search-field';
+import FieldToSearchFor from './search-field/FieldToSearchFor';
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -40,19 +42,22 @@ function createSuperPane(typeName: string, S: any) {
   const selectColumns = createEmitter();
   const refresh = createEmitter();
 
+  const fieldsToChooseFrom = schemaType.fields.map((field: any) => ({ name: field.name, title: field.type.title }))
+
   function SuperPane() {
     const router = useRouter();
     const [pageSize, setPageSize] = useState(25);
     const [columnSelectorOpen, setColumnSelectorOpen] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(new Set<string>());
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
-
+    const [selectedFieldToSearchFor, setSelectedFieldToSearchFor] = useState<FieldToSearchFor>(fieldsToChooseFrom[0])
     const containerRef = useRef<HTMLDivElement>(null);
 
     const client = usePaginatedClient({
       typeName,
       pageSize,
       selectedColumns,
+      selectedFieldToSearchFor
     });
 
     useEffect(() => {
@@ -106,7 +111,14 @@ function createSuperPane(typeName: string, S: any) {
               />
             </div>
           </div>
-
+          <div>
+            <SearchField
+              searchCallback={client.setUserQuery}
+              currentField={selectedFieldToSearchFor}
+              fieldsToChooseFrom={fieldsToChooseFrom}
+              onFieldSelected={setSelectedFieldToSearchFor}
+            />
+          </div>
           <div className={styles.tableWrapper}>
             <div
               className={classNames(styles.loadingOverlay, {
@@ -320,6 +332,8 @@ function createSuperPane(typeName: string, S: any) {
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
                 </Select>
               </div>
             </label>
@@ -332,7 +346,7 @@ function createSuperPane(typeName: string, S: any) {
               mode="bleed"
             />
             <Label>
-              {client.page + 1}&nbsp;/&nbsp;{client.totalPages}
+              {client.totalPages === 0 ? 0 : client.page + 1}&nbsp;/&nbsp;{client.totalPages}
             </Label>
             <Button
               fontSize={1}
