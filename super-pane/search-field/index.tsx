@@ -1,47 +1,57 @@
-import { TextInput } from '@sanity/ui'
-import React, { useEffect, useState } from 'react'
-import FieldToSearchFor from './FieldToSearchFor';
-import SelectFieldToSearchFor from './select-field-to-search-for'
+import { TextInput, Select } from '@sanity/ui';
+import React, { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 
-interface SearchFieldProps {
-  searchCallback: (userQuery: string) => void
-  fieldsToChooseFrom: FieldToSearchFor[],
-  currentField: FieldToSearchFor,
-  onFieldSelected: (field: FieldToSearchFor) => void
+interface Props {
+  fieldsToChooseFrom: Array<{ name: string; title: string }>;
+  currentField: string | null;
+  onSearch: (userQuery: string) => void;
+  onFieldSelected: (field: string) => void;
 }
 
-let timeout: NodeJS.Timeout
-
-const SearchField: React.FC<SearchFieldProps> = ({ searchCallback, currentField, fieldsToChooseFrom, onFieldSelected }) => {
-  const [userQuery, setUserQuery] = useState('')
+function SearchField({
+  currentField,
+  fieldsToChooseFrom,
+  onSearch,
+  onFieldSelected,
+}: Props) {
+  const [userQuery, setUserQuery] = useState('');
 
   useEffect(() => {
-    if (timeout) clearTimeout(timeout)
-    if (!userQuery.length) return searchCallback('')
-    timeout = setTimeout(() => {
-      searchCallback(userQuery)
-    }, 700)
-    return () => clearTimeout(timeout)
-  }, [userQuery, searchCallback])
+    if (!userQuery.length) {
+      onSearch('');
+      return;
+    }
 
-  return <div className={styles.searchField}>
-    <TextInput
-      fontSize={[2, 2, 3, 4]}
-      onChange={(event) =>
-        setUserQuery(event.currentTarget.value)
-      }
-      padding={[3, 3, 4]}
-      placeholder="Search"
-      value={userQuery}
-      className={styles.searchInput}
-    />
-    <SelectFieldToSearchFor
-      currentField={currentField}
-      onFieldSelected={onFieldSelected}
-      fieldsToChooseFrom={fieldsToChooseFrom}
-    />
-  </div>
+    const timeout = setTimeout(() => {
+      onSearch(userQuery);
+    }, 700);
+
+    return () => clearTimeout(timeout);
+  }, [userQuery, onSearch]);
+
+  return (
+    <form onSubmit={(e) => e.preventDefault()} className={styles.searchForm}>
+      <TextInput
+        onChange={(event) => setUserQuery(event.currentTarget.value)}
+        placeholder="Search"
+        value={userQuery}
+      />
+
+      <div className={styles.searchSelect}>
+        <Select
+          value={currentField || undefined}
+          onChange={(e) => onFieldSelected(e.currentTarget.value)}
+        >
+          {fieldsToChooseFrom.map((field) => (
+            <option key={field.name} value={field.name}>
+              {field.title}
+            </option>
+          ))}
+        </Select>
+      </div>
+    </form>
+  );
 }
 
-export default SearchField
+export default SearchField;

@@ -26,10 +26,10 @@ import {
   SyncIcon,
   SpinnerIcon,
   ControlsIcon,
+  SearchIcon,
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
-import FieldToSearchFor from './search-field/FieldToSearchFor';
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -41,8 +41,14 @@ function createSuperPane(typeName: string, S: any) {
   const schemaType = schema.get(typeName);
   const selectColumns = createEmitter();
   const refresh = createEmitter();
+  const search = createEmitter();
 
-  const fieldsToChooseFrom = schemaType.fields.map((field: any) => ({ name: field.name, title: field.type.title }))
+  const fieldsToChooseFrom = (schemaType.fields as any[])
+    .filter((field: any) => field?.type?.jsonType === 'string')
+    .map((field: any) => ({
+      name: field.name as string,
+      title: field.type.title as string,
+    }));
 
   function SuperPane() {
     const router = useRouter();
@@ -50,14 +56,17 @@ function createSuperPane(typeName: string, S: any) {
     const [columnSelectorOpen, setColumnSelectorOpen] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(new Set<string>());
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
-    const [selectedFieldToSearchFor, setSelectedFieldToSearchFor] = useState<FieldToSearchFor>(fieldsToChooseFrom[0])
+    const [selectedSearchField, setSelectedSearchField] = useState<
+      string | null
+    >(fieldsToChooseFrom[0].name || null);
+    const [showSearch, setShowSearch] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const client = usePaginatedClient({
       typeName,
       pageSize,
       selectedColumns,
-      selectedFieldToSearchFor
+      searchField: selectedSearchField,
     });
 
     useEffect(() => {
@@ -67,6 +76,10 @@ function createSuperPane(typeName: string, S: any) {
     useEffect(() => {
       return refresh.subscribe(client.refresh);
     }, [client.refresh]);
+
+    useEffect(() => {
+      return search.subscribe(() => setShowSearch((prev) => !prev));
+    }, []);
 
     const fields = schemaType.fields.filter((field: any) =>
       selectedColumns.has(field.name)
@@ -111,14 +124,16 @@ function createSuperPane(typeName: string, S: any) {
               />
             </div>
           </div>
-          <div>
-            <SearchField
-              searchCallback={client.setUserQuery}
-              currentField={selectedFieldToSearchFor}
-              fieldsToChooseFrom={fieldsToChooseFrom}
-              onFieldSelected={setSelectedFieldToSearchFor}
-            />
-          </div>
+          {showSearch && (
+            <div>
+              <SearchField
+                currentField={selectedSearchField}
+                fieldsToChooseFrom={fieldsToChooseFrom}
+                onSearch={client.setUserQuery}
+                onFieldSelected={setSelectedSearchField}
+              />
+            </div>
+          )}
           <div className={styles.tableWrapper}>
             <div
               className={classNames(styles.loadingOverlay, {
@@ -346,7 +361,8 @@ function createSuperPane(typeName: string, S: any) {
               mode="bleed"
             />
             <Label>
-              {client.totalPages === 0 ? 0 : client.page + 1}&nbsp;/&nbsp;{client.totalPages}
+              {client.totalPages === 0 ? 0 : client.page + 1}&nbsp;/&nbsp;
+              {client.totalPages}
             </Label>
             <Button
               fontSize={1}
@@ -384,11 +400,14 @@ function createSuperPane(typeName: string, S: any) {
     menuItems: S.documentTypeList(typeName)
       .menuItems([
         S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
+        fieldsToChooseFrom.length
+          ? S.menuItem().title('Search').icon(SearchIcon).action(search.notify)
+          : null,
         S.menuItem()
           .title('Select Columns')
           .icon(ControlsIcon)
           .action(selectColumns.notify),
-      ])
+      ].filter(Boolean))
       .serialize().menuItems,
   });
 }
