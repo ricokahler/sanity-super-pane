@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { debounceTime, tap } from 'rxjs/operators';
 import { nanoid } from 'nanoid';
 import client from './client';
+import { Field } from './types/Field';
 
 export interface Cursor {
   results: any[];
@@ -17,8 +18,8 @@ const removeDraftPrefix = (s: string) =>
 interface Params {
   typeName: string;
   pageSize: number;
-  selectedColumns: Set<string>;
-  searchField: string | null;
+  searchField: string | undefined;
+  selectedColumns: Map<string, Field>;
 }
 
 function usePaginatedClient({
@@ -58,8 +59,6 @@ function usePaginatedClient({
     userQuery.length && searchField
       ? ` && ${searchField} match "${userQuery}*"`
       : '';
-
-  console.log({ searchQuery });
 
   // get total count
   useEffect(() => {
@@ -214,9 +213,21 @@ function usePaginatedClient({
     const ids = pageIds.map((id) => [id, `drafts.${id}`]).flat();
     // these IDs will go into a specific query. if the draft or published
     // version happens to not exist, that's okay.
-    const query = `*[_id in $ids ${searchQuery}] { _id, _type, ${Array.from(
-      selectedColumns
-    ).join(', ')} }`;
+    const selectedColumnsArray = Array.from(selectedColumns.entries())
+    const columns = selectedColumnsArray.reduce((queryString, [name, field], index) => {
+      let stringToAdd = ''
+      if (!field.query) {
+        stringToAdd += ` ${name}`
+      } else {
+        stringToAdd += ` '${name}': ${field.query}`
+      }
+      if (index !== selectedColumnsArray.length - 1) {
+        stringToAdd += ','
+      }
+      return queryString += stringToAdd
+    }, '')
+
+    const query = `*[_id in $ids ${searchQuery}] { _id, _type, ${columns} }`;
 
     async function getResults() {
       // add the `results` to the loading statuses

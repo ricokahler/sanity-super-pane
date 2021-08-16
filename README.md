@@ -35,6 +35,11 @@ export default () =>
     ]);
 ```
 
+### Custom columns (optional):
+The SuperPane supports custom queries and column cells. A custom column consists of a title, name and type. Optionally, you can prodide it with a query and/or custom compoment.
+Example is show in [structure.js](./structure.js)
+
+
 ## Local development
 
 Here is the first time setup for this lib:

@@ -1,17 +1,18 @@
 import { TextInput, Select } from '@sanity/ui';
 import React, { useEffect, useState } from 'react';
+import { Field } from '../types/Field';
 import styles from './styles.module.css';
 
 interface Props {
-  fieldsToChooseFrom: Array<{ name: string; title: string }>;
-  currentField: string | null;
+  currentField?: string;
   onSearch: (userQuery: string) => void;
   onFieldSelected: (field: string) => void;
+  searchableFields: Field[]
 }
 
 function SearchField({
   currentField,
-  fieldsToChooseFrom,
+  searchableFields,
   onSearch,
   onFieldSelected,
 }: Props) {
@@ -43,7 +44,7 @@ function SearchField({
           value={currentField || undefined}
           onChange={(e) => onFieldSelected(e.currentTarget.value)}
         >
-          {fieldsToChooseFrom.map((field) => (
+          {searchableFields.map((field) => (
             <option key={field.name} value={field.name}>
               {field.title}
             </option>

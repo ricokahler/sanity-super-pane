@@ -30,6 +30,7 @@ import {
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
+import { Field } from './types/Field'
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -37,28 +38,31 @@ function parentHasClass(el: HTMLElement | null, className: string): boolean {
   return parentHasClass(el.parentElement, className);
 }
 
-function createSuperPane(typeName: string, S: any) {
+function createSuperPane(typeName: string, S: any, customFields: Field[] = []) {
   const schemaType = schema.get(typeName);
   const selectColumns = createEmitter();
   const refresh = createEmitter();
   const search = createEmitter();
 
-  const fieldsToChooseFrom = (schemaType.fields as any[])
-    .filter((field: any) => field?.type?.jsonType === 'string')
-    .map((field: any) => ({
-      name: field.name as string,
-      title: field.type.title as string,
-    }));
+  const customFieldsMap = new Map(customFields.map((field) => [field.name, field]))
+  
+  const schemaFields = schemaType.fields
+
+  const allFields = schemaFields.reduce((fields: Map<string, Field>, field: any) => {
+    if (fields.has(field.name)) return fields
+    fields.set(field.name, { name: field.name, title: field.type.title, type: field.type.name })
+    return fields
+  }, new Map(customFieldsMap)) as Map<string, Field>
+
+  const searchableFields = Array.from(allFields.values()).filter((field) => field.type === 'string')
 
   function SuperPane() {
     const router = useRouter();
     const [pageSize, setPageSize] = useState(25);
     const [columnSelectorOpen, setColumnSelectorOpen] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState(new Set<string>());
+    const [selectedColumns, setSelectedColumns] = useState(customFieldsMap);
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
-    const [selectedSearchField, setSelectedSearchField] = useState<
-      string | null
-    >(fieldsToChooseFrom[0].name || null);
+    const [selectedSearchField, setSelectedSearchField] = useState<string | undefined>(searchableFields.length ? searchableFields[0].name : undefined)
     const [showSearch, setShowSearch] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -80,10 +84,6 @@ function createSuperPane(typeName: string, S: any) {
     useEffect(() => {
       return search.subscribe(() => setShowSearch((prev) => !prev));
     }, []);
-
-    const fields = schemaType.fields.filter((field: any) =>
-      selectedColumns.has(field.name)
-    );
 
     const atLeastOneSelected = client.results.some((i) =>
       selectedIds.has(i._normalizedId)
@@ -128,7 +128,7 @@ function createSuperPane(typeName: string, S: any) {
             <div>
               <SearchField
                 currentField={selectedSearchField}
-                fieldsToChooseFrom={fieldsToChooseFrom}
+                searchableFields={searchableFields}
                 onSearch={client.setUserQuery}
                 onFieldSelected={setSelectedSearchField}
               />
@@ -188,9 +188,9 @@ function createSuperPane(typeName: string, S: any) {
                       <Label>Updated At</Label>
                     </th>
                   )}
-                  {fields.map((field: any) => (
+                  {Array.from(selectedColumns.values()).map((field) => (
                     <th key={field.name}>
-                      <Label>{field.type.title}</Label>
+                      <Label>{field.title}</Label>
                     </th>
                   ))}
                   <th className={styles.optionsCell} aria-label="Options" />
@@ -207,7 +207,6 @@ function createSuperPane(typeName: string, S: any) {
                       })
                     );
                   };
-
                   return (
                     <tr
                       key={item._normalizedId}
@@ -281,8 +280,7 @@ function createSuperPane(typeName: string, S: any) {
                       {selectedColumns.has('_updatedAt') && (
                         <td>{new Date(item._updatedAt).toLocaleString()}</td>
                       )}
-
-                      {fields.map((field: any) => (
+                      {Array.from(selectedColumns.values()).map((field) => (
                         <Cell field={field} value={item[field.name]} />
                       ))}
 
@@ -376,6 +374,7 @@ function createSuperPane(typeName: string, S: any) {
         </div>
 
         <ColumnSelector
+          fields={allFields}
           open={columnSelectorOpen}
           onClose={() => setColumnSelectorOpen(false)}
           typeName={typeName}
@@ -400,7 +399,7 @@ function createSuperPane(typeName: string, S: any) {
     menuItems: S.documentTypeList(typeName)
       .menuItems([
         S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
-        fieldsToChooseFrom.length
+        searchableFields.length
           ? S.menuItem().title('Search').icon(SearchIcon).action(search.notify)
           : null,
         S.menuItem()
