@@ -4,7 +4,7 @@
     "name": "example-project"
   },
   "api": {
-    "projectId": "vs7c9lm7",
+    "projectId": "",
     "dataset": "production"
   },
   "plugins": [
