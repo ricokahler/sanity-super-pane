@@ -2,14 +2,31 @@ import React from 'react';
 import SanityPreview from 'part:@sanity/base/preview';
 import blockContentToString from '../block-content-to-string';
 import styles from './styles.module.css';
+import { Field } from '../types/Field';
+import { Badge } from '@sanity/ui';
 
 interface Props {
-  field: any;
+  field: Field;
   value: any;
 }
 
 function Cell({ field, value }: Props) {
-  switch (field.type.name) {
+  if (field.component) {
+    const props = { [field.name]: value }
+    return <td key={field.name}>
+      <field.component {...props} />
+    </td>
+  }
+  switch (field.type) {
+    case 'boolean':
+      return <td key={field.name}>
+        <Badge
+          size={1}
+          tone={value ? 'positive' : 'caution'}
+        >
+          {value?.toString()}
+        </Badge>
+      </td>
     case 'string':
     case 'number': {
       return <td key={field.name}>{value}</td>;

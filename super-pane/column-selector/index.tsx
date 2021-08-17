@@ -1,29 +1,28 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Dialog, Checkbox, Button } from '@sanity/ui';
 import { nanoid } from 'nanoid';
-import schema from 'part:@sanity/base/schema';
 import styles from './styles.module.css';
+import { Field } from '../types/Field';
 
 interface Props {
   typeName: string;
   open: boolean;
   onClose: () => void;
-  onSelect: (selectedColumns: Set<string>) => void;
-  initiallySelectedColumns: Set<string>;
+  onSelect: (selectedColumns: Map<string, Field>) => void;
+  initiallySelectedColumns: Map<string, Field>;
+  fields: Map<string, Field>
 }
 
 function ColumnSelector({
   open,
   onClose,
   onSelect,
-  typeName,
   initiallySelectedColumns,
+  fields,
 }: Props) {
-  const schemaType = schema.get(typeName);
   const [selectedColumns, setSelectedColumns] = useState(
     initiallySelectedColumns,
   );
-
   useEffect(() => {
     if (open) {
       setSelectedColumns(initiallySelectedColumns);
@@ -63,47 +62,44 @@ function ColumnSelector({
               className={styles.checkbox}
               checked={selectedColumns.has('_updatedAt')}
               onChange={() => {
-                setSelectedColumns((set) => {
-                  const nextSet = new Set(set);
+                setSelectedColumns((map) => {
+                  const nextMap = new Map(map);
 
-                  if (set.has('_updatedAt')) {
-                    nextSet.delete('_updatedAt');
+                  if (map.has('_updatedAt')) {
+                    nextMap.delete('_updatedAt');
                   } else {
-                    nextSet.add('_updatedAt');
+                    nextMap.set('_updatedAt', { title: 'Updated at', name: '_updatedAt', type: 'number' });
                   }
 
-                  return nextSet;
+                  return nextMap;
                 });
               }}
             />
             <span>Updated At</span>
           </label>
         </li>
-        {schemaType.fields.map((i: any) => {
-          const fieldName: string = i.name;
-          const title: string = i.type.title;
-
+        {Array.from(fields.values()).map((field) => {
           return (
-            <li key={fieldName}>
+            <li key={field.name}>
               <label className={styles.label}>
                 <Checkbox
                   className={styles.checkbox}
-                  checked={selectedColumns.has(fieldName)}
+                  checked={selectedColumns.has(field.name)}
                   onChange={() => {
-                    setSelectedColumns((set) => {
-                      const nextSet = new Set(set);
+                    console.log(field)
+                    setSelectedColumns((map) => {
+                      const nextMap = new Map(map);
 
-                      if (set.has(fieldName)) {
-                        nextSet.delete(fieldName);
+                      if (map.has(field.name)) {
+                        nextMap.delete(field.name);
                       } else {
-                        nextSet.add(fieldName);
+                        nextMap.set(field.name, field);
                       }
-
-                      return nextSet;
+                      return nextMap;
                     });
                   }}
                 />
-                <span>{title}</span>
+                <span>{field.title}</span>
               </label>
             </li>
           );
