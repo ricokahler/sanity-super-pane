@@ -74,7 +74,13 @@ After this is done grab the project ID:
 cat ./temp-movie-project/sanity.json | grep projectId
 ```
 
-Copy and paste the `projectId` into the root `sanity.json` and then delete the `temp-movie-project` folder.
+Then you create a .env.development file for development:
+
+```
+echo SANITY_STUDIO_API_PROJECT_ID="ENTER_PROJECT_ID" > .env.development
+```
+
+Finally delete the `temp-movie-project` folder.
 
 ### Start the dev server
 
