@@ -20,3 +20,4 @@ rollup.config.js
 sanity.json
 structure.js
 tsconfig.json
+vercel.json
