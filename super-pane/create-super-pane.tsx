@@ -1,14 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
-import useRouter, { RouterProvider } from './use-router';
+import S from '@sanity/desk-tool/structure-builder';
+import { get } from 'lodash';
 import classNames from 'classnames';
 import schema from 'part:@sanity/base/schema';
 import SanityPreview from 'part:@sanity/base/preview';
+import useRouter, { RouterProvider } from './use-router';
 import BulkActionsMenu from './bulk-actions-menu';
 import createEmitter from './create-emitter';
 import usePaginatedClient from './use-paginated-client';
 import ColumnSelector from './column-selector';
 import Cell from './cell';
 import {
+  Card,
+  Box,
+  Text,
   Label,
   Button,
   Select,
@@ -17,6 +22,7 @@ import {
   MenuItem,
   Checkbox,
   Badge,
+  Flex,
 } from '@sanity/ui';
 import {
   EllipsisVerticalIcon,
@@ -27,9 +33,16 @@ import {
   SpinnerIcon,
   ControlsIcon,
   SearchIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  SortIcon,
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
+import { useStickyStateSet } from './hooks/useStickyStateSet';
+import { useStickyStateOrder } from './hooks/useStickyStateOrder';
+import { getSelectableFields } from './helpers/getSelectableFields';
+import { SelectableField } from './column-selector/index';
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -37,7 +50,7 @@ function parentHasClass(el: HTMLElement | null, className: string): boolean {
   return parentHasClass(el.parentElement, className);
 }
 
-function createSuperPane(typeName: string, S: any) {
+function createSuperPane(typeName: string) {
   const schemaType = schema.get(typeName);
   const selectColumns = createEmitter();
   const refresh = createEmitter();
@@ -50,11 +63,21 @@ function createSuperPane(typeName: string, S: any) {
       title: field.type.title as string,
     }));
 
+  const rowsPerPage = [25, 50, 100, 250, 500];
+  const orderColumnDefault = { key: '', direction: 'asc' };
+
   function SuperPane() {
     const router = useRouter();
-    const [pageSize, setPageSize] = useState(25);
+    const [pageSize, setPageSize] = useState(rowsPerPage[0]);
     const [columnSelectorOpen, setColumnSelectorOpen] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState(new Set<string>());
+    const [selectedColumns, setSelectedColumns] = useStickyStateSet(
+      new Set<string>(),
+      `super-pane-${typeName}-selected-columns`
+    );
+    const [orderColumn, setOrderColumn] = useStickyStateOrder(
+      orderColumnDefault,
+      `super-pane-${typeName}-order-column`
+    );
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
     const [selectedSearchField, setSelectedSearchField] = useState<
       string | null
@@ -67,6 +90,7 @@ function createSuperPane(typeName: string, S: any) {
       pageSize,
       selectedColumns,
       searchField: selectedSearchField,
+      orderColumn,
     });
 
     useEffect(() => {
@@ -81,38 +105,71 @@ function createSuperPane(typeName: string, S: any) {
       return search.subscribe(() => setShowSearch((prev) => !prev));
     }, []);
 
-    const fields = schemaType.fields.filter((field: any) =>
-      selectedColumns.has(field.name)
+    const defaultFields = selectedColumns.has('_updatedAt')
+      ? [
+          {
+            fieldPath: '_updatedAt',
+            title: 'Updated At',
+            field: { type: { name: '_updatedAt' } },
+          },
+        ]
+      : [];
+    const selectableFields = getSelectableFields(schemaType.fields).filter(
+      (field: any) => selectedColumns.has(field.fieldPath)
     );
+    const fields = [...defaultFields, ...selectableFields];
 
     const atLeastOneSelected = client.results.some((i) =>
       selectedIds.has(i._normalizedId)
     );
+
     const allSelected = client.results.every((i) =>
       selectedIds.has(i._normalizedId)
     );
 
+    function handleOrder(key: string) {
+      // Reset
+      if (orderColumn.key === key && orderColumn.direction === 'desc') {
+        return setOrderColumn(orderColumnDefault);
+      }
+
+      // Set updated key and/or direction
+      setOrderColumn({
+        key,
+        direction:
+          orderColumn?.direction === 'asc' && orderColumn.key === key
+            ? 'desc'
+            : 'asc',
+      });
+    }
+
     return (
       <>
         <div ref={containerRef} className={styles.container}>
-          <div
-            className={classNames(styles.bulkInfo, {
-              [styles.bulkInfoRevealed]: selectedIds.size > 0,
-            })}
+          <Card
+            padding={3}
+            tone={selectedIds.size < 1 ? `transparent` : `positive`}
+            shadow={1}
           >
-            <div className={styles.bulkInfoContainer}>
-              <Label>
-                {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}{' '}
-                selected
-              </Label>
-              <button
-                className={styles.clearButton}
+            <Flex align="center">
+              <Button
+                disabled={selectedIds.size < 1}
                 onClick={() => setSelectedIds(new Set())}
+                fontSize={1}
+                paddingY={1}
+                paddingX={2}
               >
-                <Label>Clear</Label>
-              </button>
+                Clear
+              </Button>
+              <Box paddingX={2} style={{ marginRight: 'auto' }}>
+                <Text size={1} weight="bold">
+                  {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}{' '}
+                  selected
+                </Text>
+              </Box>
 
               <BulkActionsMenu
+                disabled={selectedIds.size < 1}
                 className={styles.clearButton}
                 selectedIds={selectedIds}
                 typeName={typeName}
@@ -122,8 +179,8 @@ function createSuperPane(typeName: string, S: any) {
                   client.refresh();
                 }}
               />
-            </div>
-          </div>
+            </Flex>
+          </Card>
           {showSearch && (
             <div>
               <SearchField
@@ -142,6 +199,7 @@ function createSuperPane(typeName: string, S: any) {
             >
               <SpinnerIcon className={styles.loadingSpinner} />
             </div>
+
             <table className={styles.table}>
               <thead className={styles.thead}>
                 <tr>
@@ -177,20 +235,45 @@ function createSuperPane(typeName: string, S: any) {
                       />
                     </div>
                   </th>
-                  <th>
+                  <th style={{ paddingLeft: 0 }}>
                     <Label>{schemaType.title}</Label>
                   </th>
                   <th>
                     <Label>Status</Label>
                   </th>
-                  {selectedColumns.has('_updatedAt') && (
-                    <th>
-                      <Label>Updated At</Label>
-                    </th>
-                  )}
-                  {fields.map((field: any) => (
-                    <th key={field.name}>
-                      <Label>{field.type.title}</Label>
+                  {fields.map((field: SelectableField) => (
+                    <th key={field.fieldPath}>
+                      <Button
+                        mode={
+                          orderColumn.key !== field.fieldPath
+                            ? 'bleed'
+                            : 'default'
+                        }
+                        tone={
+                          orderColumn.key === field.fieldPath
+                            ? 'primary'
+                            : 'default'
+                        }
+                        padding={1}
+                        onClick={() => handleOrder(field.fieldPath)}
+                      >
+                        <Flex align="center">
+                          <Label>{field.title}</Label>
+                          {orderColumn.key === field.fieldPath ? (
+                            <>
+                              {orderColumn.direction === 'asc' ? (
+                                <ChevronDownIcon />
+                              ) : (
+                                <ChevronUpIcon />
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <SortIcon />
+                            </>
+                          )}
+                        </Flex>
+                      </Button>
                     </th>
                   ))}
                   <th className={styles.optionsCell} aria-label="Options" />
@@ -278,12 +361,11 @@ function createSuperPane(typeName: string, S: any) {
                         </Badge>
                       </td>
 
-                      {selectedColumns.has('_updatedAt') && (
-                        <td>{new Date(item._updatedAt).toLocaleString()}</td>
-                      )}
-
-                      {fields.map((field: any) => (
-                        <Cell field={field} value={item[field.name]} />
+                      {fields.map((field: SelectableField) => (
+                        <Cell
+                          field={field.field}
+                          value={get(item, field.fieldPath)}
+                        />
                       ))}
 
                       <td className={styles.optionsCell}>
@@ -344,11 +426,11 @@ function createSuperPane(typeName: string, S: any) {
                     setPageSize(parseInt(e.currentTarget.value, 10))
                   }
                 >
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
+                  {rowsPerPage.map((count) => (
+                    <option key={count} value={count}>
+                      {count}
+                    </option>
+                  ))}
                 </Select>
               </div>
             </label>
@@ -377,6 +459,7 @@ function createSuperPane(typeName: string, S: any) {
 
         <ColumnSelector
           open={columnSelectorOpen}
+          // open={true}
           onClose={() => setColumnSelectorOpen(false)}
           typeName={typeName}
           initiallySelectedColumns={selectedColumns}
@@ -398,16 +481,21 @@ function createSuperPane(typeName: string, S: any) {
     type: 'component',
     component: SuperPaneWrapper,
     menuItems: S.documentTypeList(typeName)
-      .menuItems([
-        S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
-        fieldsToChooseFrom.length
-          ? S.menuItem().title('Search').icon(SearchIcon).action(search.notify)
-          : null,
-        S.menuItem()
-          .title('Select Columns')
-          .icon(ControlsIcon)
-          .action(selectColumns.notify),
-      ].filter(Boolean))
+      .menuItems(
+        [
+          S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
+          fieldsToChooseFrom.length
+            ? S.menuItem()
+                .title('Search')
+                .icon(SearchIcon)
+                .action(search.notify)
+            : null,
+          S.menuItem()
+            .title('Select Columns')
+            .icon(ControlsIcon)
+            .action(selectColumns.notify),
+        ].filter(Boolean)
+      )
       .serialize().menuItems,
   });
 }
