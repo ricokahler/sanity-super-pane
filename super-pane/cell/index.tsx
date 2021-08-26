@@ -2,6 +2,7 @@ import React from 'react';
 import SanityPreview from 'part:@sanity/base/preview';
 import blockContentToString from '../block-content-to-string';
 import styles from './styles.module.css';
+import { Text } from '@sanity/ui';
 
 interface Props {
   field: any;
@@ -10,6 +11,15 @@ interface Props {
 
 function Cell({ field, value }: Props) {
   switch (field.type.name) {
+    // Hacky! Format _just_ the updatedAt field
+    case '_updatedAt': {
+      return (
+        <td key={field.name}>
+          <Text size={1}>{new Date(value).toLocaleString()}</Text>
+        </td>
+      );
+    }
+    // The rest of these types are legit!
     case 'string':
     case 'number': {
       return <td key={field.name}>{value}</td>;

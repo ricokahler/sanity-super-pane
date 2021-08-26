@@ -3,6 +3,7 @@ import { Dialog, Checkbox, Button } from '@sanity/ui';
 import { nanoid } from 'nanoid';
 import schema from 'part:@sanity/base/schema';
 import styles from './styles.module.css';
+import { getSelectableFields } from '../helpers/getSelectableFields';
 
 interface Props {
   typeName: string;
@@ -10,6 +11,13 @@ interface Props {
   onClose: () => void;
   onSelect: (selectedColumns: Set<string>) => void;
   initiallySelectedColumns: Set<string>;
+}
+
+export interface SelectableField {
+  field: any;
+  fieldPath: string;
+  title: string;
+  level: number;
 }
 
 function ColumnSelector({
@@ -21,7 +29,7 @@ function ColumnSelector({
 }: Props) {
   const schemaType = schema.get(typeName);
   const [selectedColumns, setSelectedColumns] = useState(
-    initiallySelectedColumns,
+    initiallySelectedColumns
   );
 
   useEffect(() => {
@@ -31,6 +39,26 @@ function ColumnSelector({
   }, [open, initiallySelectedColumns]);
 
   const dialogId = useMemo(() => nanoid(), []);
+
+  function handleSelect(fieldPath: string) {
+    setSelectedColumns((set) => {
+      const nextSet = new Set(set);
+
+      if (set.has(fieldPath)) {
+        nextSet.delete(fieldPath);
+      } else {
+        nextSet.add(fieldPath);
+      }
+
+      return nextSet;
+    });
+  }
+
+  const selectableFields = useMemo(
+    () => getSelectableFields(schemaType.fields),
+    [schemaType.fields]
+  );
+
   if (!open) {
     return null;
   }
@@ -62,52 +90,25 @@ function ColumnSelector({
             <Checkbox
               className={styles.checkbox}
               checked={selectedColumns.has('_updatedAt')}
-              onChange={() => {
-                setSelectedColumns((set) => {
-                  const nextSet = new Set(set);
-
-                  if (set.has('_updatedAt')) {
-                    nextSet.delete('_updatedAt');
-                  } else {
-                    nextSet.add('_updatedAt');
-                  }
-
-                  return nextSet;
-                });
-              }}
+              onChange={() => handleSelect('_updatedAt')}
             />
             <span>Updated At</span>
           </label>
         </li>
-        {schemaType.fields.map((i: any) => {
-          const fieldName: string = i.name;
-          const title: string = i.type.title;
-
-          return (
-            <li key={fieldName}>
+        {selectableFields.map(
+          ({ fieldPath, title, level }: SelectableField) => (
+            <li key={fieldPath} style={{ marginLeft: level > 0 ? `1rem` : `` }}>
               <label className={styles.label}>
                 <Checkbox
                   className={styles.checkbox}
-                  checked={selectedColumns.has(fieldName)}
-                  onChange={() => {
-                    setSelectedColumns((set) => {
-                      const nextSet = new Set(set);
-
-                      if (set.has(fieldName)) {
-                        nextSet.delete(fieldName);
-                      } else {
-                        nextSet.add(fieldName);
-                      }
-
-                      return nextSet;
-                    });
-                  }}
+                  checked={selectedColumns.has(fieldPath)}
+                  onChange={() => handleSelect(fieldPath)}
                 />
                 <span>{title}</span>
               </label>
             </li>
-          );
-        })}
+          )
+        )}
       </ul>
     </Dialog>
   );
