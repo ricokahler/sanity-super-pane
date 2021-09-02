@@ -3,7 +3,7 @@ import { Dialog, Checkbox, Button } from '@sanity/ui';
 import { nanoid } from 'nanoid';
 import schema from 'part:@sanity/base/schema';
 import styles from './styles.module.css';
-import { getSelectableFields } from '../helpers/getSelectableFields';
+import { getSelectableFields } from '../helpers/get-selectable-fields';
 
 interface Props {
   typeName: string;

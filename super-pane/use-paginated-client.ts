@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { debounceTime, tap } from 'rxjs/operators';
 import { nanoid } from 'nanoid';
 import client from './client';
-import { ColumnOrder } from './hooks/useStickyStateOrder';
+import { ColumnOrder } from './hooks/use-sticky-state-order';
 
 export interface Cursor {
   results: any[];

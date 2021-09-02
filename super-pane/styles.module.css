@@ -12,6 +12,8 @@
   flex: 1 1 auto;
   overflow: auto;
   position: relative;
+  padding-bottom: 200px;
+  max-height: 100%;
 }
 
 .loadingOverlay {
@@ -68,7 +70,7 @@
   position: sticky;
   top: 0;
   text-align: left;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.95);
   z-index: 1;
 }
 
@@ -83,7 +85,7 @@
   right: 0;
   bottom: 0;
   top: 0;
-  border-bottom: 2px solid #ced2d9;
+  border-bottom: 1px solid #ced2d9;
   pointer-events: none;
 }
 
@@ -101,7 +103,10 @@
   justify-content: flex-end;
   gap: 1rem;
   padding: 0.5rem;
-  border-top: 2px solid #ced2d9;
+  border-top: 1px solid #ced2d9;
+  position: sticky;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .selectLabel {

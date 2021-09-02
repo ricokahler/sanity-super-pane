@@ -39,9 +39,9 @@ import {
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
-import { useStickyStateSet } from './hooks/useStickyStateSet';
-import { useStickyStateOrder } from './hooks/useStickyStateOrder';
-import { getSelectableFields } from './helpers/getSelectableFields';
+import { useStickyStateSet } from './hooks/use-sticky-state-set';
+import { useStickyStateOrder } from './hooks/use-sticky-state-order';
+import { getSelectableFields } from './helpers/get-selectable-fields';
 import { SelectableField } from './column-selector/index';
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
@@ -348,7 +348,7 @@ function createSuperPane(typeName: string) {
                       </td>
                       <td>
                         <Badge
-                          size={1}
+                          fontSize={0}
                           tone={
                             item._status === 'published'
                               ? 'positive'
