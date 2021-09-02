@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { debounceTime, tap } from 'rxjs/operators';
 import { nanoid } from 'nanoid';
 import client from './client';
+import { ColumnOrder } from './hooks/use-sticky-state-order';
 
 export interface Cursor {
   results: any[];
@@ -19,6 +20,7 @@ interface Params {
   pageSize: number;
   selectedColumns: Set<string>;
   searchField: string | null;
+  orderColumn: ColumnOrder;
 }
 
 function usePaginatedClient({
@@ -26,6 +28,7 @@ function usePaginatedClient({
   pageSize,
   selectedColumns,
   searchField,
+  orderColumn,
 }: Params) {
   // the loading statuses are a set of strings
   // when it's empty, nothing is loading
@@ -59,7 +62,10 @@ function usePaginatedClient({
       ? ` && ${searchField} match "${userQuery}*"`
       : '';
 
-  console.log({ searchQuery });
+  // Implements ordering from the <th> buttons
+  const orderQuery = orderColumn
+    ? `| order(${orderColumn.key} ${orderColumn.direction})`
+    : ``;
 
   // get total count
   useEffect(() => {
@@ -160,7 +166,7 @@ function usePaginatedClient({
           pageSize * 2;
 
         const pageIds = await client.fetch<string[]>(
-          `*[_type == $typeName ${searchQuery}][$start...$end]._id`,
+          `*[_type == $typeName ${searchQuery}]${orderQuery}[$start...$end]._id`,
           { typeName, start, end }
         );
 
@@ -206,17 +212,21 @@ function usePaginatedClient({
         // TODO: proper error handling
         console.warn(e);
       });
-  }, [page, pageSize, typeName, refreshId, searchQuery]);
+  }, [page, pageSize, typeName, refreshId, searchQuery, orderQuery]);
 
   // get results
   useEffect(() => {
     // take all the input IDs and duplicate them with the prefix `drafts.`
     const ids = pageIds.map((id) => [id, `drafts.${id}`]).flat();
+    // Inner-object selected keys need to be shaped in the query
+    const columnKeys = Array.from(selectedColumns)
+      .map((key: string) => (key.includes('.') ? `"${key}": ${key}` : key))
+      .join(', ');
+
     // these IDs will go into a specific query. if the draft or published
     // version happens to not exist, that's okay.
-    const query = `*[_id in $ids ${searchQuery}] { _id, _type, ${Array.from(
-      selectedColumns
-    ).join(', ')} }`;
+    const query = `*[_id in $ids ${searchQuery}]${orderQuery}{ _id, _type, ${columnKeys} }`;
+    // console.log(query);
 
     async function getResults() {
       // add the `results` to the loading statuses
@@ -305,7 +315,7 @@ function usePaginatedClient({
       .subscribe(getResults);
 
     return () => subscription.unsubscribe();
-  }, [pageIds, selectedColumns, refreshId, searchQuery]);
+  }, [pageIds, selectedColumns, refreshId, searchQuery, orderQuery]);
 
   // reset page
   useEffect(() => {

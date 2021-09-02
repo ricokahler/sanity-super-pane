@@ -7,7 +7,6 @@ import {
   Dialog,
   Button,
   MenuButton,
-  Label,
   useToast,
 } from '@sanity/ui';
 import {
@@ -24,6 +23,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 const client = _client as import('@sanity/client').SanityClient;
 
 interface Props {
+  disabled: Boolean;
   className?: string;
   typeName: string;
   selectedIds: Set<string>;
@@ -63,6 +63,7 @@ const removeDraftPrefix = (s: string) =>
   s.startsWith('drafts.') ? s.substring('drafts.'.length) : s;
 
 function BulkActionsMenu({
+  disabled,
   className,
   selectedIds,
   typeName,
@@ -261,9 +262,15 @@ function BulkActionsMenu({
     <>
       <MenuButton
         button={
-          <button className={className}>
-            <Label>Bulk Actions</Label>
-          </button>
+          disabled ? (
+            <Button fontSize={1} paddingY={1} paddingX={2} disabled>
+              Bulk Actions
+            </Button>
+          ) : (
+            <Button fontSize={1} paddingY={1} paddingX={2}>
+              Bulk Actions
+            </Button>
+          )
         }
         portal
         id={buttonId}

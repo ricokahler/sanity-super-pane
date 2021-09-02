@@ -1,4 +1,4 @@
-import {MdLocalMovies as icon} from 'react-icons/md'
+import { MdLocalMovies as icon } from 'react-icons/md';
 
 export default {
   name: 'movie',
@@ -52,13 +52,36 @@ export default {
       name: 'castMembers',
       title: 'Cast Members',
       type: 'array',
-      of: [{type: 'castMember'}],
+      of: [{ type: 'castMember' }],
     },
     {
       name: 'crewMembers',
       title: 'Crew Members',
       type: 'array',
-      of: [{type: 'crewMember'}],
+      of: [{ type: 'crewMember' }],
+    },
+    {
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      fields: [
+        {
+          name: 'seoTitle',
+          title: 'Seo Title',
+          type: 'string',
+        },
+        {
+          name: 'seoDescription',
+          title: 'Seo Description',
+          type: 'string',
+        },
+      ],
+      preview: {
+        select: {
+          title: 'seoTitle',
+          subtitle: 'seoDescription',
+        },
+      },
     },
   ],
   preview: {
@@ -70,15 +93,17 @@ export default {
       castName1: 'castMembers.1.person.name',
     },
     prepare(selection) {
-      const year = selection.date && selection.date.split('-')[0]
-      const cast = [selection.castName0, selection.castName1].filter(Boolean).join(', ')
+      const year = selection.date && selection.date.split('-')[0];
+      const cast = [selection.castName0, selection.castName1]
+        .filter(Boolean)
+        .join(', ');
 
       return {
         title: `${selection.title} ${year ? `(${year})` : ''}`,
         date: selection.date,
         subtitle: cast,
         media: selection.media,
-      }
+      };
     },
   },
-}
+};
