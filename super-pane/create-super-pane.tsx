@@ -484,12 +484,7 @@ function createSuperPane(typeName: string) {
       .menuItems(
         [
           S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
-          fieldsToChooseFrom.length
-            ? S.menuItem()
-                .title('Search')
-                .icon(SearchIcon)
-                .action(search.notify)
-            : null,
+          S.menuItem().title('Search').icon(SearchIcon).action(search.notify),
           S.menuItem()
             .title('Select Columns')
             .icon(ControlsIcon)

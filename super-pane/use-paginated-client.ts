@@ -315,7 +315,7 @@ function usePaginatedClient({
       .subscribe(getResults);
 
     return () => subscription.unsubscribe();
-  }, [pageIds, selectedColumns, refreshId, searchQuery]);
+  }, [pageIds, selectedColumns, refreshId, searchQuery, orderQuery]);
 
   // reset page
   useEffect(() => {

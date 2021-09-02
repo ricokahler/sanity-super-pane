@@ -7,7 +7,6 @@ import {
   Dialog,
   Button,
   MenuButton,
-  Label,
   useToast,
 } from '@sanity/ui';
 import {
