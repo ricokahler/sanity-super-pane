@@ -26,7 +26,8 @@
     "@types/classnames": "2.3.0",
     "classnames": "2.3.1",
     "nanoid": "3.1.28",
-    "react-error-boundary": "3.1.3"
+    "react-error-boundary": "3.1.3",
+    "styled-components": "^5.3.1"
   },
   "devDependencies": {
     "@babel/core": "7.15.5",
