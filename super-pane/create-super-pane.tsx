@@ -81,7 +81,7 @@ function createSuperPane(typeName: string) {
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
     const [selectedSearchField, setSelectedSearchField] = useState<
       string | null
-    >(fieldsToChooseFrom[0].name || null);
+    >(fieldsToChooseFrom.filter((field) => field?.name)[0]?.name || null);
     const [showSearch, setShowSearch] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
