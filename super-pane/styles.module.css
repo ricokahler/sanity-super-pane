@@ -104,7 +104,7 @@
   gap: 1rem;
   padding: 0.5rem;
   border-top: 1px solid #ced2d9;
-  position: sticky;
+  position: absolute;
   bottom: 0;
   background: rgba(255, 255, 255, 0.95);
 }

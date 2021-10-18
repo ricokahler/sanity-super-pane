@@ -1,4 +1,4 @@
-import { TextInput, Select } from '@sanity/ui';
+import { TextInput, Select, Card, Text, Box } from '@sanity/ui';
 import React, { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 
@@ -29,6 +29,16 @@ function SearchField({
 
     return () => clearTimeout(timeout);
   }, [userQuery, onSearch]);
+
+  if (!fieldsToChooseFrom?.length) {
+    return (
+      <Box padding={3}>
+        <Card tone="caution" padding={3} radius={2} shadow={1}>
+          <Text>No Searchable Fields to select from</Text>
+        </Card>
+      </Box>
+    );
+  }
 
   return (
     <form onSubmit={(e) => e.preventDefault()} className={styles.searchForm}>
