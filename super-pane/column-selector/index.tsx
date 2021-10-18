@@ -18,6 +18,7 @@ export interface SelectableField {
   fieldPath: string;
   title: string;
   level: number;
+  sortable: boolean;
 }
 
 function ColumnSelector({
@@ -97,7 +98,7 @@ function ColumnSelector({
         </li>
         {selectableFields.map(
           ({ fieldPath, title, level }: SelectableField) => (
-            <li key={fieldPath} style={{ marginLeft: level > 0 ? `1rem` : `` }}>
+            <li key={fieldPath} style={{ marginLeft: level * 10 }}>
               <label className={styles.label}>
                 <Checkbox
                   className={styles.checkbox}

@@ -6,15 +6,16 @@ import { Text } from '@sanity/ui';
 
 interface Props {
   field: any;
+  fieldPath: string;
   value: any;
 }
 
-function Cell({ field, value }: Props) {
+function Cell({ field, fieldPath, value }: Props) {
   switch (field.type.name) {
     // Hacky! Format _just_ the updatedAt field
     case '_updatedAt': {
       return (
-        <td key={field.name}>
+        <td key={fieldPath}>
           <Text size={1}>{new Date(value).toLocaleString()}</Text>
         </td>
       );
@@ -22,7 +23,7 @@ function Cell({ field, value }: Props) {
     // The rest of these types are legit!
     case 'string':
     case 'number': {
-      return <td key={field.name}>{value}</td>;
+      return <td key={fieldPath}>{value}</td>;
     }
     case 'blockContent': {
       const blockContentAsString = blockContentToString(value);
@@ -30,7 +31,7 @@ function Cell({ field, value }: Props) {
       return (
         <td
           title={blockContentAsString}
-          key={field.name}
+          key={fieldPath}
           className={styles.blockContent}
         >
           {blockContentAsString}
@@ -39,21 +40,19 @@ function Cell({ field, value }: Props) {
     }
     case 'datetime': {
       return (
-        <td key={field.name}>
-          {value ? new Date(value).toLocaleString() : ''}
-        </td>
+        <td key={fieldPath}>{value ? new Date(value).toLocaleString() : ''}</td>
       );
     }
     case 'date': {
       return (
-        <td key={field.name}>
+        <td key={fieldPath}>
           {value ? new Date(value).toLocaleDateString() : ''}
         </td>
       );
     }
     case 'array': {
       return (
-        <td key={field.name}>
+        <td key={fieldPath}>
           {value?.length || 0} item
           {value?.length === 1 ? '' : 's'}
         </td>
@@ -61,7 +60,7 @@ function Cell({ field, value }: Props) {
     }
     default: {
       return (
-        <td key={field.name}>
+        <td key={fieldPath}>
           {value && (
             <SanityPreview type={field.type} layout="default" value={value} />
           )}

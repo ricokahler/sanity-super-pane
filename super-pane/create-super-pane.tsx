@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import S from '@sanity/desk-tool/structure-builder';
 import { get } from 'lodash';
 import classNames from 'classnames';
@@ -33,9 +33,6 @@ import {
   SpinnerIcon,
   ControlsIcon,
   SearchIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  SortIcon,
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
@@ -43,6 +40,7 @@ import { useStickyStateSet } from './hooks/use-sticky-state-set';
 import { useStickyStateOrder } from './hooks/use-sticky-state-order';
 import { getSelectableFields } from './helpers/get-selectable-fields';
 import { SelectableField } from './column-selector/index';
+import TableHeaderInner from './table-header-inner';
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -81,7 +79,7 @@ function createSuperPane(typeName: string) {
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
     const [selectedSearchField, setSelectedSearchField] = useState<
       string | null
-    >(fieldsToChooseFrom[0]?.name || null);
+    >(fieldsToChooseFrom?.length ? fieldsToChooseFrom[0]?.name : null);
     const [showSearch, setShowSearch] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -111,11 +109,17 @@ function createSuperPane(typeName: string) {
             fieldPath: '_updatedAt',
             title: 'Updated At',
             field: { type: { name: '_updatedAt' } },
+            level: 0,
+            sortable: true,
           },
         ]
       : [];
-    const selectableFields = getSelectableFields(schemaType.fields).filter(
-      (field: any) => selectedColumns.has(field.fieldPath)
+    const selectableFields = useMemo(
+      () =>
+        getSelectableFields(schemaType.fields).filter((field: any) =>
+          selectedColumns.has(field.fieldPath)
+        ),
+      [selectedColumns]
     );
     const fields = [...defaultFields, ...selectableFields];
 
@@ -243,37 +247,32 @@ function createSuperPane(typeName: string) {
                   </th>
                   {fields.map((field: SelectableField) => (
                     <th key={field.fieldPath}>
-                      <Button
-                        mode={
-                          orderColumn.key !== field.fieldPath
-                            ? 'bleed'
-                            : 'default'
-                        }
-                        tone={
-                          orderColumn.key === field.fieldPath
-                            ? 'primary'
-                            : 'default'
-                        }
-                        padding={1}
-                        onClick={() => handleOrder(field.fieldPath)}
-                      >
-                        <Flex align="center">
-                          <Label>{field.title}</Label>
-                          {orderColumn.key === field.fieldPath ? (
-                            <>
-                              {orderColumn.direction === 'asc' ? (
-                                <ChevronDownIcon />
-                              ) : (
-                                <ChevronUpIcon />
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <SortIcon />
-                            </>
-                          )}
-                        </Flex>
-                      </Button>
+                      {field.sortable ? (
+                        <Button
+                          mode={
+                            orderColumn.key !== field.fieldPath
+                              ? 'bleed'
+                              : 'default'
+                          }
+                          tone={
+                            orderColumn.key === field.fieldPath
+                              ? 'primary'
+                              : 'default'
+                          }
+                          padding={1}
+                          onClick={() => handleOrder(field.fieldPath)}
+                        >
+                          <TableHeaderInner
+                            field={field}
+                            orderColumn={orderColumn}
+                          />
+                        </Button>
+                      ) : (
+                        <TableHeaderInner
+                          field={field}
+                          orderColumn={orderColumn}
+                        />
+                      )}
                     </th>
                   ))}
                   <th className={styles.optionsCell} aria-label="Options" />
@@ -364,6 +363,7 @@ function createSuperPane(typeName: string) {
                       {fields.map((field: SelectableField) => (
                         <Cell
                           field={field.field}
+                          fieldPath={field.fieldPath}
                           value={get(item, field.fieldPath)}
                         />
                       ))}
@@ -416,10 +416,14 @@ function createSuperPane(typeName: string) {
             </table>
           </div>
 
-          <div className={styles.footer}>
-            <label className={styles.selectLabel}>
-              <Label>Rows Per Page</Label>
-              <div className={styles.select}>
+          <Card
+            borderTop
+            style={{ position: `absolute`, bottom: 0, width: `100%` }}
+            padding={3}
+          >
+            <Flex align="center" gap={2}>
+              <Flex align="center" gap={2}>
+                <Label style={{ whiteSpace: `nowrap` }}>Rows Per Page</Label>
                 <Select
                   value={pageSize}
                   onChange={(e) =>
@@ -432,29 +436,34 @@ function createSuperPane(typeName: string) {
                     </option>
                   ))}
                 </Select>
-              </div>
-            </label>
-            <Button
-              fontSize={1}
-              disabled={client.page === 0}
-              onClick={() => client.setPage(client.page - 1)}
-              icon={ChevronLeftIcon}
-              title="Previous page"
-              mode="bleed"
-            />
-            <Label>
-              {client.totalPages === 0 ? 0 : client.page + 1}&nbsp;/&nbsp;
-              {client.totalPages}
-            </Label>
-            <Button
-              fontSize={1}
-              disabled={client.page >= client.totalPages - 1}
-              onClick={() => client.setPage(client.page + 1)}
-              icon={ChevronRightIcon}
-              title="Next Page"
-              mode="bleed"
-            />
-          </div>
+              </Flex>
+
+              <Box flex={1}>
+                <Flex align="center" justify="flex-end" gap={2}>
+                  <Button
+                    fontSize={1}
+                    disabled={client.page === 0}
+                    onClick={() => client.setPage(client.page - 1)}
+                    icon={ChevronLeftIcon}
+                    title="Previous page"
+                    mode="bleed"
+                  />
+                  <Label>
+                    {client.totalPages === 0 ? 0 : client.page + 1}&nbsp;/&nbsp;
+                    {client.totalPages}
+                  </Label>
+                  <Button
+                    fontSize={1}
+                    disabled={client.page >= client.totalPages - 1}
+                    onClick={() => client.setPage(client.page + 1)}
+                    icon={ChevronRightIcon}
+                    title="Next Page"
+                    mode="bleed"
+                  />
+                </Flex>
+              </Box>
+            </Flex>
+          </Card>
         </div>
 
         <ColumnSelector
