@@ -63,7 +63,7 @@ function createSuperPane(typeName: string, S: any, customFields: Field[] = []) {
     const [selectedColumns, setSelectedColumns] = useState(customFieldsMap);
     const [selectedIds, setSelectedIds] = useState(new Set<string>());
     const [selectedSearchField, setSelectedSearchField] = useState<string | undefined>(searchableFields.length ? searchableFields[0].name : undefined)
-    const [showSearch, setShowSearch] = useState(false);
+    const [showSearch, setShowSearch] = useState(true);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const client = usePaginatedClient({
@@ -88,6 +88,7 @@ function createSuperPane(typeName: string, S: any, customFields: Field[] = []) {
     const atLeastOneSelected = client.results.some((i) =>
       selectedIds.has(i._normalizedId)
     );
+
     const allSelected = client.results.every((i) =>
       selectedIds.has(i._normalizedId)
     );
