@@ -41,8 +41,8 @@ function SearchField({
 
       <div className={styles.searchSelect}>
         <Select
-          value={currentField || undefined}
-          onChange={(e) => onFieldSelected(e.currentTarget.value)}
+          value={localStorage.getItem("super_pane_key") || undefined}
+          onChange={(e) => localStorage.setItem("super_pane_key", e.currentTarget.value)}
         >
           {searchableFields.map((field) => (
             <option key={field.name} value={field.name}>

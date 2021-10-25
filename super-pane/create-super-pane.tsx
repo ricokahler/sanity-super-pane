@@ -70,7 +70,7 @@ function createSuperPane(typeName: string, S: any, customFields: Field[] = []) {
       typeName,
       pageSize,
       selectedColumns,
-      searchField: selectedSearchField,
+      searchField: localStorage.getItem("super_pane_key"),
     });
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 {
-  "name": "sanity-super-pane",
-  "version": "0.0.0",
+  "name": "@fnc/sanity-super-pane",
+  "version": "0.0.15",
   "description": "",
   "keywords": [
     "sanity"

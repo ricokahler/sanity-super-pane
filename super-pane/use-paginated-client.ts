@@ -18,7 +18,7 @@ const removeDraftPrefix = (s: string) =>
 interface Params {
   typeName: string;
   pageSize: number;
-  searchField: string | undefined;
+  searchField: string | undefined | null;
   selectedColumns: Map<string, Field>;
 }
 
