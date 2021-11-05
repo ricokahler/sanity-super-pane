@@ -195,15 +195,14 @@ function createSuperPane(typeName: string) {
               />
             </div>
           )}
+          <div
+            className={classNames(styles.loadingOverlay, {
+              [styles.loadingOverlayActive]: client.loading,
+            })}
+          >
+            <SpinnerIcon className={styles.loadingSpinner} />
+          </div>
           <div className={styles.tableWrapper}>
-            <div
-              className={classNames(styles.loadingOverlay, {
-                [styles.loadingOverlayActive]: client.loading,
-              })}
-            >
-              <SpinnerIcon className={styles.loadingSpinner} />
-            </div>
-
             <table className={styles.table}>
               <thead className={styles.thead}>
                 <tr>

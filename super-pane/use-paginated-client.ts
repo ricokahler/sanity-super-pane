@@ -299,10 +299,19 @@ function usePaginatedClient({
     });
 
     // TODO: add error handler
+    // Listen to changes across the entire type
+    const typeQuery = `*[_type == $typeName]`;
     const subscription = client
-      .listen(query, { ids })
+      .listen(typeQuery, { typeName })
       .pipe(
-        tap(() => {
+        tap((result) => {
+          // Add a new id to the array if a new doc was created
+          const docId = result.documentId.replace('drafts.', '');
+
+          if (!pageIds.includes(docId)) {
+            setPageIds([...pageIds, docId]);
+          }
+
           // add the `results` to the loading statuses
           setLoadingStatuses((prev) => {
             const next = new Set(prev);
