@@ -58,6 +58,22 @@ function Cell({ field, fieldPath, value }: Props) {
         </td>
       );
     }
+    case 'boolean': {
+      if (value == undefined){
+        return (
+          <td key={fieldPath}>
+            {''}
+          </td>
+        );
+      } 
+      else {
+        return (
+          <td key={fieldPath}>
+            {value == true ? 'true' : 'false'}
+          </td>
+        );
+      }
+    }
     default: {
       return (
         <td key={fieldPath}>
