@@ -1,17 +1,9 @@
 {
+  "extends": "./tsconfig.settings",
+  "include": ["./src", "./package.config.ts"],
   "compilerOptions": {
-    "strict": true,
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "target": "esnext",
-    "moduleResolution": "node",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "./dist"
-  },
-  "include": [
-    "./node_modules/@sanity/base/types/**/*.ts",
-    "./**/*.ts",
-    "./**/*.tsx"
-  ]
+    "rootDir": ".",
+    "jsx": "react-jsx",
+    "noEmit": true
+  }
 }

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { debounceTime, tap } from 'rxjs/operators';
-import { nanoid } from 'nanoid';
-import client from './client';
+import { uuid } from '@sanity/uuid';
 import { ColumnOrder } from './hooks/use-sticky-state-order';
+import { useClient } from 'sanity';
 
 export interface Cursor {
   results: any[];
@@ -30,6 +30,7 @@ function usePaginatedClient({
   searchField,
   orderColumn,
 }: Params) {
+  const client = useClient()
   // the loading statuses are a set of strings
   // when it's empty, nothing is loading
   const [loadingStatuses, setLoadingStatuses] = useState(new Set<string>());
@@ -52,8 +53,8 @@ function usePaginatedClient({
   const [results, setResults] = useState<any[]>([]);
 
   // used to force refresh. TODO: consider refactoring this
-  const [refreshId, setRefreshId] = useState(nanoid());
-  const refresh = useCallback(() => setRefreshId(nanoid()), []);
+  const [refreshId, setRefreshId] = useState(uuid());
+  const refresh = useCallback(() => setRefreshId(uuid()), []);
 
   const [userQuery, setUserQuery] = useState('');
   // Builds the string to use when a custom filter has been entered

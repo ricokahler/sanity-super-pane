@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { nanoid } from 'nanoid';
+import { useState, useMemo } from 'react';
+import { uuid } from '@sanity/uuid';;
 import {
   Menu,
   MenuItem,
@@ -15,13 +15,9 @@ import {
   PublishIcon,
   TrashIcon,
 } from '@sanity/icons';
-import schema from 'part:@sanity/base/schema';
-import SanityPreview from 'part:@sanity/base/preview';
-import styles from './styles.module.css';
-import _client from 'part:@sanity/base/client';
+import {useSchema, SanityDefaultPreview, useClient, getPreviewValueWithFallback} from 'sanity';
+// import SanityPreview from 'part:@sanxity/base/preview';
 import { ErrorBoundary } from 'react-error-boundary';
-const client = _client as import('@sanity/client').SanityClient;
-
 interface Props {
   disabled: Boolean;
   className?: string;
@@ -48,11 +44,14 @@ const ErroredDocuments = ({ e, schemaType }: { e: any; schemaType: any }) => {
       </p>
       <p>
         {idsWithErrors.map((id) => (
-          <SanityPreview
-            type={schemaType}
-            key={id}
-            value={{ _id: id, _type: 'movie' }}
-          />
+          <SanityDefaultPreview
+          schemaType={schemaType}
+          layout="default"
+          key={id}
+          {...getPreviewValueWithFallback({
+            value: {_id: id, _type: 'movie'},
+          })}
+        />
         ))}
       </p>
     </ErrorBoundary>
@@ -69,10 +68,12 @@ function BulkActionsMenu({
   typeName,
   onDelete,
 }: Props) {
-  const buttonId = useMemo(nanoid, []);
-  const schemaType = useMemo(() => schema.get(typeName), [typeName]);
+  const schema = useSchema();
+  const client = useClient();
+  const buttonId = useMemo(uuid, []);
+  const schemaType = useMemo(() => schema.get(typeName), [typeName, schema]);
   const toast = useToast();
-  const dialogId = useMemo(nanoid, []);
+  const dialogId = useMemo(uuid, []);
   const [dialogMode, setDialogMode] = useState<
     'discard_changes' | 'unpublish' | 'publish' | 'delete' | null
   >(null);
@@ -317,7 +318,7 @@ function BulkActionsMenu({
           header={<>Discard Changes</>}
           zOffset={100000}
           footer={
-            <div className={styles.footer}>
+            <div className={'footer'}>
               <Button
                 text="Cancel"
                 mode="ghost"
@@ -335,7 +336,7 @@ function BulkActionsMenu({
           }
           onClose={() => setDialogMode(null)}
         >
-          <div className={styles.content}>
+          <div className={'content'}>
             <p>
               Are you sure you want to discard changes to{' '}
               <strong>{selectedIds.size}</strong> document
@@ -366,7 +367,7 @@ function BulkActionsMenu({
           header={<>Unpublish Documents</>}
           zOffset={100000}
           footer={
-            <div className={styles.footer}>
+            <div className={'footer'}>
               <Button
                 text="Cancel"
                 mode="ghost"
@@ -384,7 +385,7 @@ function BulkActionsMenu({
           }
           onClose={() => setDialogMode(null)}
         >
-          <div className={styles.content}>
+          <div className={'content'}>
             <p>
               Are you sure you want to unpublish{' '}
               <strong>{selectedIds.size}</strong> document
@@ -417,7 +418,7 @@ function BulkActionsMenu({
           header={<>Publish Documents</>}
           zOffset={100000}
           footer={
-            <div className={styles.footer}>
+            <div className={'footer'}>
               <Button
                 text="Cancel"
                 mode="ghost"
@@ -434,7 +435,7 @@ function BulkActionsMenu({
           }
           onClose={() => setDialogMode(null)}
         >
-          <div className={styles.content}>
+          <div className={'content'}>
             <p>
               Are you sure you want to publish{' '}
               <strong>{selectedIds.size}</strong> document
@@ -465,7 +466,7 @@ function BulkActionsMenu({
           header={<>Delete Documents</>}
           zOffset={100000}
           footer={
-            <div className={styles.footer}>
+            <div className={'footer'}>
               <Button
                 text="Cancel"
                 mode="ghost"
@@ -482,7 +483,7 @@ function BulkActionsMenu({
           }
           onClose={() => setDialogMode(null)}
         >
-          <div className={styles.content}>
+          <div className={'content'}>
             <p>
               Are you sure you want to delete{' '}
               <strong>{selectedIds.size}</strong> document

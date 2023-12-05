@@ -1,6 +1,5 @@
 import { TextInput, Select, Card, Text, Box } from '@sanity/ui';
 import React, { useEffect, useState } from 'react';
-import styles from './styles.module.css';
 
 interface Props {
   fieldsToChooseFrom: Array<{ name: string; title: string }>;
@@ -41,14 +40,14 @@ function SearchField({
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className={styles.searchForm}>
+    <form onSubmit={(e) => e.preventDefault()} className={'searchForm'}>
       <TextInput
         onChange={(event) => setUserQuery(event.currentTarget.value)}
         placeholder="Search"
         value={userQuery}
       />
 
-      <div className={styles.searchSelect}>
+      <div className={'searchSelect'}>
         <Select
           value={currentField || undefined}
           onChange={(e) => onFieldSelected(e.currentTarget.value)}

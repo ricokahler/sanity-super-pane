@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Dialog, Checkbox, Button } from '@sanity/ui';
-import { nanoid } from 'nanoid';
-import schema from 'part:@sanity/base/schema';
-import styles from './styles.module.css';
+import { uuid } from '@sanity/uuid';;
+import {useSchema} from 'sanity';
 import { getSelectableFields } from '../helpers/get-selectable-fields';
 
 interface Props {
@@ -28,6 +27,7 @@ function ColumnSelector({
   typeName,
   initiallySelectedColumns,
 }: Props) {
+  const schema = useSchema();
   const schemaType = schema.get(typeName);
   const [selectedColumns, setSelectedColumns] = useState(
     initiallySelectedColumns
@@ -39,7 +39,7 @@ function ColumnSelector({
     }
   }, [open, initiallySelectedColumns]);
 
-  const dialogId = useMemo(() => nanoid(), []);
+  const dialogId = useMemo(uuid, []);
 
   function handleSelect(fieldPath: string) {
     setSelectedColumns((set) => {
@@ -56,8 +56,14 @@ function ColumnSelector({
   }
 
   const selectableFields = useMemo(
-    () => getSelectableFields(schemaType.fields),
-    [schemaType.fields]
+    () => {
+      if (!schemaType || !('fields' in schemaType)) {
+        return [];
+      }
+
+      return getSelectableFields(schemaType.fields || [])
+    },
+    [schemaType]
   );
 
   if (!open) {
@@ -66,10 +72,10 @@ function ColumnSelector({
 
   return (
     <Dialog
-      className={styles.dialog}
+      className={'dialog'}
       header={<>Select Columns</>}
       footer={
-        <div className={styles.footer}>
+        <div className={'footer'}>
           <Button mode="ghost" text="Cancel" onClick={onClose} />
           <Button
             tone="primary"
@@ -85,11 +91,11 @@ function ColumnSelector({
       onClose={onClose}
       zOffset={100000}
     >
-      <ul className={styles.list}>
+      <ul className={'list'}>
         <li>
-          <label className={styles.label}>
+          <label className={'label'}>
             <Checkbox
-              className={styles.checkbox}
+              className={'checkbox'}
               checked={selectedColumns.has('_updatedAt')}
               onChange={() => handleSelect('_updatedAt')}
             />
@@ -99,9 +105,9 @@ function ColumnSelector({
         {selectableFields.map(
           ({ fieldPath, title, level }: SelectableField) => (
             <li key={fieldPath} style={{ marginLeft: level * 10 }}>
-              <label className={styles.label}>
+              <label className={'label'}>
                 <Checkbox
-                  className={styles.checkbox}
+                  className={'checkbox'}
                   checked={selectedColumns.has(fieldPath)}
                   onChange={() => handleSelect(fieldPath)}
                 />

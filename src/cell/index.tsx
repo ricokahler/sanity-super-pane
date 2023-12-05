@@ -1,7 +1,5 @@
-import React from 'react';
-import SanityPreview from 'part:@sanity/base/preview';
+import {SanityDefaultPreview, getPreviewValueWithFallback} from 'sanity';
 import blockContentToString from '../block-content-to-string';
-import styles from './styles.module.css';
 import { Text } from '@sanity/ui';
 
 interface Props {
@@ -32,7 +30,7 @@ function Cell({ field, fieldPath, value }: Props) {
         <td
           title={blockContentAsString}
           key={fieldPath}
-          className={styles.blockContent}
+          className={'blockContent'}
         >
           {blockContentAsString}
         </td>
@@ -62,7 +60,12 @@ function Cell({ field, fieldPath, value }: Props) {
       return (
         <td key={fieldPath}>
           {value && (
-            <SanityPreview type={field.type} layout="default" value={value} />
+            
+            <SanityDefaultPreview
+            {...getPreviewValueWithFallback({
+              value: value,
+            })}
+            schemaType={field.type} layout="default" />
           )}
         </td>
       );

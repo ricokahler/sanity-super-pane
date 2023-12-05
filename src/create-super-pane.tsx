@@ -1,10 +1,11 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
-import S from '@sanity/desk-tool/structure-builder';
+import { useMemo, useEffect, useState, useRef, isValidElement } from 'react';
+import {usePaneRouter, type StructureBuilder} from 'sanity/desk';
+// import S from '@sanity/desk-tool/structure-builder';
 import { get } from 'lodash';
 import classNames from 'classnames';
-import schema from 'part:@sanity/base/schema';
-import SanityPreview from 'part:@sanity/base/preview';
-import useRouter, { RouterProvider } from './use-router';
+import {DocumentPreviewStore, PreviewValue, SanityDefaultPreview, SanityDocument, SchemaType, getPreviewStateObservable, getPreviewValueWithFallback, isRecord, useDocumentPreviewStore, useSchema} from 'sanity';
+import {isNumber, isString} from 'lodash'
+// import useRouter, { RouterProvider } from './use-router';
 import BulkActionsMenu from './bulk-actions-menu';
 import createEmitter from './create-emitter';
 import usePaginatedClient from './use-paginated-client';
@@ -34,13 +35,26 @@ import {
   ControlsIcon,
   SearchIcon,
 } from '@sanity/icons';
-import styles from './styles.module.css';
+// import styles from './'module'.css';
 import SearchField from './search-field';
 import { useStickyStateSet } from './hooks/use-sticky-state-set';
 import { useStickyStateOrder } from './hooks/use-sticky-state-order';
 import { getSelectableFields } from './helpers/get-selectable-fields';
 import { SelectableField } from './column-selector/index';
 import TableHeaderInner from './table-header-inner';
+import {useMemoObservable} from 'react-rx'
+
+export interface PaneItemPreviewState {
+  isLoading?: boolean
+  draft?: PreviewValue | Partial<SanityDocument> | null
+  published?: PreviewValue | Partial<SanityDocument> | null
+}
+
+export interface PaneItemPreviewProps {
+  documentPreviewStore: DocumentPreviewStore
+  schemaType: SchemaType
+  value: SanityDocument
+}
 
 function parentHasClass(el: HTMLElement | null, className: string): boolean {
   if (!el) return false;
@@ -48,24 +62,52 @@ function parentHasClass(el: HTMLElement | null, className: string): boolean {
   return parentHasClass(el.parentElement, className);
 }
 
-function createSuperPane(typeName: string) {
-  const schemaType = schema.get(typeName);
+function TitleCell(props: PaneItemPreviewProps) {
+  const {value, schemaType} = props
+  const title =
+    (isRecord(value.title) && isValidElement(value.title)) ||
+    isString(value.title) ||
+    isNumber(value.title)
+      ? value.title
+      : null
+
+  const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
+    () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
+    [props.documentPreviewStore, schemaType, value._id, title]
+  )!
+
+  return <SanityDefaultPreview
+    schemaType={schemaType}
+    layout="default"
+    isPlaceholder={isLoading}
+    {...getPreviewValueWithFallback({
+      value,
+      draft,
+      published,
+    })}
+  />
+}
+
+function createSuperPane(typeName: string, S: StructureBuilder) {
+  const schema = useSchema();
+  const schemaType = schema.get(typeName)!;
   const selectColumns = createEmitter();
   const refresh = createEmitter();
   const search = createEmitter();
 
-  const fieldsToChooseFrom = (schemaType.fields as any[])
+  const fieldsToChooseFrom = schemaType && 'fields' in schemaType ? (schemaType?.fields as any[])
     .filter((field: any) => field?.type?.jsonType === 'string')
     .map((field: any) => ({
       name: field.name as string,
       title: field.type.title as string,
-    }));
+    })) : [];
 
   const rowsPerPage = [25, 50, 100, 250, 500];
   const orderColumnDefault = { key: '', direction: 'asc' };
 
   function SuperPane() {
-    const router = useRouter();
+    const documentPreviewStore = useDocumentPreviewStore()
+    const router = usePaneRouter();
     const [pageSize, setPageSize] = useState(rowsPerPage[0]);
     const [columnSelectorOpen, setColumnSelectorOpen] = useState(false);
     const [selectedColumns, setSelectedColumns] = useStickyStateSet(
@@ -149,7 +191,7 @@ function createSuperPane(typeName: string) {
 
     return (
       <>
-        <div ref={containerRef} className={styles.container}>
+        <div ref={containerRef} className={'container'}>
           <Card
             padding={3}
             tone={selectedIds.size < 1 ? `transparent` : `positive`}
@@ -174,7 +216,7 @@ function createSuperPane(typeName: string) {
 
               <BulkActionsMenu
                 disabled={selectedIds.size < 1}
-                className={styles.clearButton}
+                className={'clearButton'}
                 selectedIds={selectedIds}
                 typeName={typeName}
                 onDelete={() => {
@@ -196,22 +238,22 @@ function createSuperPane(typeName: string) {
             </div>
           )}
           <div
-            className={classNames(styles.loadingOverlay, {
-              [styles.loadingOverlayActive]: client.loading,
+            className={classNames('loadingOverlay', {
+              ['loadingOverlayActive']: client.loading,
             })}
           >
-            <SpinnerIcon className={styles.loadingSpinner} />
+            <SpinnerIcon className={'loadingSpinner'} />
           </div>
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead className={styles.thead}>
+          <div className={'tableWrapper'}>
+            <table className={'table'}>
+              <thead className={'thead'}>
                 <tr>
                   <th
-                    className={classNames(styles.checkboxCell, 'prevent-nav')}
+                    className={classNames('checkboxCell', 'prevent-nav')}
                   >
                     <input
                       type="checkbox"
-                      className={styles.hiddenCheckbox}
+                      className={'hiddenCheckbox'}
                       onChange={() => {
                         setSelectedIds((set) => {
                           const nextSet = new Set(set);
@@ -230,7 +272,7 @@ function createSuperPane(typeName: string) {
                       }}
                       checked={allSelected}
                     />
-                    <div aria-hidden="true" className={styles.checkboxFacade}>
+                    <div aria-hidden="true" className={'checkboxFacade'}>
                       <Checkbox
                         tabIndex={-1}
                         checked={atLeastOneSelected}
@@ -239,7 +281,7 @@ function createSuperPane(typeName: string) {
                     </div>
                   </th>
                   <th style={{ paddingLeft: 0 }}>
-                    <Label>{schemaType.title}</Label>
+                    <Label>{schemaType?.title || 'No title'}</Label>
                   </th>
                   <th>
                     <Label>Status</Label>
@@ -274,19 +316,17 @@ function createSuperPane(typeName: string) {
                       )}
                     </th>
                   ))}
-                  <th className={styles.optionsCell} aria-label="Options" />
+                  <th className={'optionsCell'} aria-label="Options" />
                 </tr>
               </thead>
 
-              <tbody className={styles.tbody}>
+              <tbody className={'tbody'}>
                 {client.results.map((item) => {
                   const handleNavigation = () => {
-                    router.navigateUrl(
-                      router.resolveIntentLink('edit', {
+                    router.navigateIntent('edit', {
                         id: item._id,
                         type: item._type,
-                      })
-                    );
+                    });
                   };
 
                   return (
@@ -305,13 +345,13 @@ function createSuperPane(typeName: string) {
                     >
                       <td
                         className={classNames(
-                          styles.checkboxCell,
+                          'checkboxCell',
                           'prevent-nav'
                         )}
                       >
                         <input
                           type="checkbox"
-                          className={styles.hiddenCheckbox}
+                          className={'hiddenCheckbox'}
                           onChange={(e) => {
                             setSelectedIds((set) => {
                               const nextSet = new Set(set);
@@ -329,7 +369,7 @@ function createSuperPane(typeName: string) {
                         />
                         <div
                           aria-hidden="true"
-                          className={styles.checkboxFacade}
+                          className={'checkboxFacade'}
                         >
                           <Checkbox
                             tabIndex={-1}
@@ -337,12 +377,8 @@ function createSuperPane(typeName: string) {
                           />
                         </div>
                       </td>
-                      <td className={styles.titleCell}>
-                        <SanityPreview
-                          type={schemaType}
-                          layout="default"
-                          value={item}
-                        />
+                      <td className={'titleCell'}>
+                        <TitleCell documentPreviewStore={documentPreviewStore} value={item} schemaType={schemaType} />
                       </td>
                       <td>
                         <Badge
@@ -367,7 +403,7 @@ function createSuperPane(typeName: string) {
                         />
                       ))}
 
-                      <td className={styles.optionsCell}>
+                      <td className={'optionsCell'}>
                         <MenuButton
                           button={
                             <Button
@@ -380,7 +416,7 @@ function createSuperPane(typeName: string) {
                           portal
                           id="prevent-nav-example"
                           menu={
-                            <Menu className={styles.menu}>
+                            <Menu className={'menu'}>
                               <MenuItem
                                 className="prevent-nav"
                                 text="Open"
@@ -479,9 +515,7 @@ function createSuperPane(typeName: string) {
 
   function SuperPaneWrapper() {
     return (
-      <RouterProvider>
         <SuperPane />
-      </RouterProvider>
     );
   }
 
@@ -503,4 +537,4 @@ function createSuperPane(typeName: string) {
   });
 }
 
-export default createSuperPane;
+export {createSuperPane};
