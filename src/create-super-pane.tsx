@@ -89,23 +89,22 @@ function TitleCell(props: PaneItemPreviewProps) {
 }
 
 function createSuperPane(typeName: string, S: StructureBuilder) {
-  const schema = useSchema();
-  const schemaType = schema.get(typeName)!;
   const selectColumns = createEmitter();
   const refresh = createEmitter();
   const search = createEmitter();
-
-  const fieldsToChooseFrom = schemaType && 'fields' in schemaType ? (schemaType?.fields as any[])
-    .filter((field: any) => field?.type?.jsonType === 'string')
-    .map((field: any) => ({
-      name: field.name as string,
-      title: field.type.title as string,
-    })) : [];
 
   const rowsPerPage = [25, 50, 100, 250, 500];
   const orderColumnDefault = { key: '', direction: 'asc' };
 
   function SuperPane() {
+    const schema = useSchema();
+    const schemaType = schema.get(typeName)!;
+    const fieldsToChooseFrom = schemaType && 'fields' in schemaType ? (schemaType?.fields as any[])
+      .filter((field: any) => field?.type?.jsonType === 'string')
+      .map((field: any) => ({
+        name: field.name as string,
+        title: field.type.title as string,
+      })) : [];
     const documentPreviewStore = useDocumentPreviewStore()
     const router = usePaneRouter();
     const [pageSize, setPageSize] = useState(rowsPerPage[0]);
