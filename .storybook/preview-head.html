@@ -1,0 +1,33 @@
+<style>
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('https://rsms.me/inter/font-files/InterVariable.woff2?v=4.0') format('woff2');
+    font-named-instance: 'Regular';
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('https://rsms.me/inter/font-files/InterVariable-Italic.woff2?v=4.0') format('woff2');
+    font-named-instance: 'Italic';
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Temporarily hide docs + story preloader skeletons, which currently show an unsightly flash when loading */
+  .sb-preparing-docs,
+  .sb-preparing-story {
+    display: none;
+  }
+  /* Hide all story overflow scrollbars on docs pages */
+  .docs-story > div {
+    overflow: hidden;
+  }
+</style>

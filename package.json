@@ -38,16 +38,29 @@
     "watch": "pkg-utils watch --strict",
     "postinstall": "husky install",
     "prepack": "pinst --disable",
-    "postpack": "pinst --enable"
+    "postpack": "pinst --enable",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@sanity/incompatible-plugin": "^1.0.4"
+    "@sanity/incompatible-plugin": "^1.0.4",
+    "@storybook/addon-a11y": "^7.6.3",
+    "@storybook/addon-themes": "^7.6.3",
+    "vite-tsconfig-paths": "^4.2.1"
   },
   "devDependencies": {
     "@sanity/icons": "^2.7.0",
     "@sanity/pkg-utils": "^3.3.2",
     "@sanity/plugin-kit": "^3.1.10",
     "@sanity/ui": "^1.9.3",
+    "@storybook/addon-essentials": "^7.6.3",
+    "@storybook/addon-interactions": "^7.6.3",
+    "@storybook/addon-links": "^7.6.3",
+    "@storybook/addon-onboarding": "^1.0.9",
+    "@storybook/blocks": "^7.6.3",
+    "@storybook/react": "^7.6.3",
+    "@storybook/react-vite": "^7.6.3",
+    "@storybook/test": "^7.6.3",
     "@types/react": "^18.2.42",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
@@ -57,7 +70,10 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-storybook": "^0.6.15",
+    "husky": "^8.0.0",
     "npm-run-all": "^4.1.5",
+    "pinst": "^3.0.0",
     "prettier": "^3.1.0",
     "prettier-plugin-packagejson": "^2.4.7",
     "react": "^18.2.0",
@@ -67,10 +83,9 @@
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
     "sanity": "^3.20.2",
+    "storybook": "^7.6.3",
     "styled-components": "^6.1.1",
-    "typescript": "^5.3.2",
-    "husky": "^8.0.0",
-    "pinst": "^3.0.0"
+    "typescript": "^5.3.2"
   },
   "peerDependencies": {
     "@sanity/icons": "^2",
@@ -81,5 +96,11 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "packageManager": "yarn@4.0.2",
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
   }
 }
