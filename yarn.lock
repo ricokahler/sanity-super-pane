@@ -1949,6 +1949,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^8.3.1":
+  version: 8.3.1
+  resolution: "@faker-js/faker@npm:8.3.1"
+  checksum: ed50c27a5674a8c755574ccc0c79c29fa70cd17d524b701269f584d2f78720c690da219f6111b0e743a4f6570fb08685d826b2d9e80ca9c1484b8c26047864c6
+  languageName: node
+  linkType: hard
+
 "@fal-works/esbuild-plugin-global-externals@npm:^2.1.2":
   version: 2.1.2
   resolution: "@fal-works/esbuild-plugin-global-externals@npm:2.1.2"
@@ -2969,6 +2976,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@reach/observe-rect@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@reach/observe-rect@npm:1.2.0"
+  checksum: e2d2b399381e466705bcf7535ba1ed29866792d7aff386a2a41ca1f5ae9d8920f21c769d67b82b38045cd14e1c2aa29dbf6f37a77f323d16d01378eb02ad2925
+  languageName: node
+  linkType: hard
+
 "@rexxars/choosealicense-list@npm:^1.1.2":
   version: 1.1.2
   resolution: "@rexxars/choosealicense-list@npm:1.1.2"
@@ -3300,6 +3314,18 @@ __metadata:
     get-it: "npm:^8.4.4"
     rxjs: "npm:^7.0.0"
   checksum: e9e694e5dc9afb4bd303e89f970dee31d2a7cd07bd0125e6a1d771abeff6e4277c959b2fde02726a2cae9f859deffaf4157cad643c7323a7555ce611627a270b
+  languageName: node
+  linkType: hard
+
+"@sanity/client@npm:^6.9.3":
+  version: 6.9.3
+  resolution: "@sanity/client@npm:6.9.3"
+  dependencies:
+    "@sanity/eventsource": "npm:^5.0.0"
+    "@vercel/stega": "npm:0.1.0"
+    get-it: "npm:^8.4.4"
+    rxjs: "npm:^7.0.0"
+  checksum: fa4127fe51bd37db2f083c014834e5ed851b759529e6a38c96b2499b511d91539585e3445f6d1015ede1c740698da87900893638aacad3bac64d036337d8b07e
   languageName: node
   linkType: hard
 
@@ -4551,6 +4577,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.12.1":
+  version: 5.12.1
+  resolution: "@tanstack/query-core@npm:5.12.1"
+  checksum: 46d142354c362cb588fdeb4158cb807b8822a1333d1bada3781b9bad7ac8ea98ee7264139cb85021a6e959a795d90f3c2e1a9fa5958c13b6d6bfe5c38f74808c
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.12.2":
+  version: 5.12.2
+  resolution: "@tanstack/react-query@npm:5.12.2"
+  dependencies:
+    "@tanstack/query-core": "npm:5.12.1"
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 835a7cb9bf41e2da5eda9430ab4d96eb5259e455d110a814d30051c81b6961392fcf3aa47697408baf1e6b66f438fdf0c71a7e0cd42c693e6fb87021e65f42aa
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-table@npm:^8.10.7":
+  version: 8.10.7
+  resolution: "@tanstack/react-table@npm:8.10.7"
+  dependencies:
+    "@tanstack/table-core": "npm:8.10.7"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 2ddf6f90b06e7af069f16dbe5d0dc8c8afab3de88c25e33f6c297beaf2507c2e46fee1f746f7977d48bad2114909bba0016026fc2b6a85bcaee472cdafdc7ffd
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-virtual@npm:3.0.0-beta.54":
   version: 3.0.0-beta.54
   resolution: "@tanstack/react-virtual@npm:3.0.0-beta.54"
@@ -4559,6 +4615,13 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 2119bdeb1d99318b50e7824001c2a36a787a610a89d63a97e94651d6722dd670642f88f1e375f75f0ede8c98b3dc5da8783145d4a8c39065d40087f4d231c451
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.10.7":
+  version: 8.10.7
+  resolution: "@tanstack/table-core@npm:8.10.7"
+  checksum: 3f671484319094443bb2db86356f408d4246e22bebd7ad444edc919fef131899384c3a27261c5ee01fb18887bc9157c5a0d9db3e32aae940ce5416f6e58b038b
   languageName: node
   linkType: hard
 
@@ -4812,6 +4875,15 @@ __metadata:
     "@types/qs": "npm:*"
     "@types/serve-static": "npm:*"
   checksum: 12e562c4571da50c7d239e117e688dc434db1bac8be55613294762f84fd77fbd0658ccd553c7d3ab02408f385bc93980992369dd30e2ecd2c68c358e6af8fabf
+  languageName: node
+  linkType: hard
+
+"@types/faker@npm:^6":
+  version: 6.6.8
+  resolution: "@types/faker@npm:6.6.8"
+  dependencies:
+    faker: "npm:*"
+  checksum: afd46dfb4c425b109acf5b09d3e15e9dea88a8da794c2090ae51dd7895e11015a69251bdb155117d518704189966eb15a556df4056e225a0ca7ffd15c658dded
   languageName: node
   linkType: hard
 
@@ -8230,6 +8302,13 @@ __metadata:
   bin:
     extract-zip: cli.js
   checksum: 333f1349ee678d47268315f264dbfcd7003747d25640441e186e87c66efd7129f171f1bcfe8ff1151a24da19d5f8602daff002ee24145dc65516bc9a8e40ee08
+  languageName: node
+  linkType: hard
+
+"faker@npm:*, faker@npm:^6.6.6":
+  version: 6.6.6
+  resolution: "faker@npm:6.6.6"
+  checksum: 21f6a57adc921ffb61e5ff767024a699a414047264ff4bbb080bd4994ec5a8061e1828aae9a4be812f6f356f1b6fd082bc2d54df7c37163b943a421a8f7f7079
   languageName: node
   linkType: hard
 
@@ -13025,6 +13104,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-virtual@npm:^2.10.4":
+  version: 2.10.4
+  resolution: "react-virtual@npm:2.10.4"
+  dependencies:
+    "@reach/observe-rect": "npm:^1.1.0"
+  peerDependencies:
+    react: ^16.6.3 || ^17.0.0
+  checksum: 96813e174f21e044152c09da4782b97dd55a6e32ddad743b39a79afc69e525d591b3263f7001f0e7f453ca5316743a2192bcb6a3686ce1b0ec14d1be8a2ea8e0
+  languageName: node
+  linkType: hard
+
 "react@npm:^18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
@@ -13676,6 +13766,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sanity-plugin-super-pane@workspace:."
   dependencies:
+    "@faker-js/faker": "npm:^8.3.1"
+    "@sanity/client": "npm:^6.9.3"
     "@sanity/icons": "npm:^2.7.0"
     "@sanity/incompatible-plugin": "npm:^1.0.4"
     "@sanity/pkg-utils": "npm:^3.3.2"
@@ -13691,6 +13783,9 @@ __metadata:
     "@storybook/react": "npm:^7.6.3"
     "@storybook/react-vite": "npm:^7.6.3"
     "@storybook/test": "npm:^7.6.3"
+    "@tanstack/react-query": "npm:^5.12.2"
+    "@tanstack/react-table": "npm:^8.10.7"
+    "@types/faker": "npm:^6"
     "@types/react": "npm:^18.2.42"
     "@typescript-eslint/eslint-plugin": "npm:^6.13.2"
     "@typescript-eslint/parser": "npm:^6.13.2"
@@ -13701,6 +13796,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.33.2"
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-storybook: "npm:^0.6.15"
+    faker: "npm:^6.6.6"
     husky: "npm:^8.0.0"
     npm-run-all: "npm:^4.1.5"
     pinst: "npm:^3.0.0"
@@ -13710,6 +13806,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.11"
     react-is: "npm:^18.2.0"
+    react-virtual: "npm:^2.10.4"
     rimraf: "npm:^5.0.5"
     rxjs: "npm:^7.8.1"
     sanity: "npm:^3.20.2"
