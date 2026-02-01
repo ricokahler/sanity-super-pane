@@ -59,7 +59,7 @@
     "@typescript-eslint/parser": "8.39.0",
     "autoprefixer": "10.4.21",
     "@babel/eslint-parser": "7.28.5",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-flowtype": "8.0.3",
     "eslint-plugin-import": "2.32.0",
