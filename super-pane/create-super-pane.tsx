@@ -33,6 +33,7 @@ import {
   SpinnerIcon,
   ControlsIcon,
   SearchIcon,
+  AddIcon
 } from '@sanity/icons';
 import styles from './styles.module.css';
 import SearchField from './search-field';
@@ -491,6 +492,7 @@ function createSuperPane(typeName: string) {
     menuItems: S.documentTypeList(typeName)
       .menuItems(
         [
+          S.menuItem().title('Add').icon(AddIcon).intent({type: 'create', params: {type: typeName, template: typeName}}).showAsAction(true),
           S.menuItem().title('Refresh').icon(SyncIcon).action(refresh.notify),
           S.menuItem().title('Search').icon(SearchIcon).action(search.notify),
           S.menuItem()
